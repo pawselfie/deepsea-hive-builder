@@ -167,6 +167,7 @@ button {
 
 #hivemind_icon {
     width: 3vw;
+    height: auto;
 }
 
 #savedText {
