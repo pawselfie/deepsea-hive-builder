@@ -201,7 +201,7 @@ function setup() {
         const btn = wrappedBtn.elt;
         const code = btn.id.slice(4);
         const img = document.createElement('img');
-        img.src = `assets/bees/bee_${code}.png`;
+        img.src = `assets/bico/icon_${code}.webp`;
         img.alt = '';
         img.draggable = false;
         img.onerror = () => img.style.display = 'none';
@@ -260,7 +260,7 @@ function setup() {
     select('#exportImg').mouseClicked(exportImage);
     select('#exportTxt').mouseClicked(exportText);
 
-    multSelt = createCheckbox('select multiple (shift)')
+    multSelt = createCheckbox('select (shift)')
         .parent(select('#multSeltCon'));
     
     select('#generalMax').mouseClicked(expandPanel.bind(null, 'general'));
