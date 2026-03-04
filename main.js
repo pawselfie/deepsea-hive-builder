@@ -42,7 +42,7 @@ if (isMobile()) {
     overlay.style.textAlign = 'center';
     overlay.style.padding = '20px';
     overlay.style.zIndex = 9999;
-    overlay.innerText = "Hivemind is not available on mobile devices.";
+    overlay.innerText = "Deepsea Hive Builder is not available on mobile devices.";
     document.body.appendChild(overlay);
     throw new Error('Mobile no more');
 }
@@ -318,10 +318,10 @@ function draw() {
         fill(select('body').style('background-color'));
         let textY = height / 2 + map(sin(frameCount * 0.025), -1, 1, -20, 20);
         noStroke();
-        text('Hivemind - Hive Maker', width/2, textY);
+        text('Deepsea Hive Builder', width/2, textY);
         textSize(25);
-        text("riot fork of dully fork of t4styl", width/2, textY+35);
-        select('#headerTitle').html('&nbsp&nbsphivemind');
+        text("fork by riot (original fork by dully, original project by t4styl)", width/2, textY+35);
+        select('#headerTitle').html('&nbsp&nbspDeepsea Hive Builder');
         if (getItem('hive')) {
             select('#appButton-2').attribute('data-status', 'active');
         } else {
@@ -331,7 +331,7 @@ function draw() {
     
     // app
     if (mode == 'app') {
-        select('#headerTitle').html(`&nbsp&nbsphivemind - ${hive.name}`);
+        select('#headerTitle').html(`&nbsp&nbspDeepsea Hive Builder - ${hive.name}`);
         drawHive(width / 2 - 140, height-17.5, 30, hive.slots, hive.level, hive.mutation, hive.beequip);
         hexes = hexes.splice(0, hive.slots.length < 25 ? 25 : hive.slots.length);
         if (hive.slots.length >= 50 || selected.length != 0) {
