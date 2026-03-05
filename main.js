@@ -296,7 +296,7 @@ function setup() {
     select('#btn-FLIP').mouseClicked(changeSlot.bind(null, 0, 'flip'));
     select('#removeBeequip').mouseClicked(changeSlot.bind(null, 0, 'removequip'));
 
-    gifted = createCheckbox('gifted (alt)')
+    gifted = createCheckbox('gifted (alt)', true)
         .id('giftedSelect')
         .parent(select('#multSeltCon'));
 }
