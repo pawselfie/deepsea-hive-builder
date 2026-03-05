@@ -291,7 +291,7 @@ function setup() {
     select('#unreleasedMax').mouseClicked(expandPanel.bind(null, 'unreleased'));
     select('#unreleasedMin').mouseClicked(expandPanel.bind(null, 'unreleased', 'true'));
 
-    select('#selectAll').mouseClicked(selectAll);
+    select('#selectAll').mouseClicked(selectAllSlots);
     select('#btn-U').mouseClicked(changeSlot.bind(null, 'U', 'bee'));
     select('#btn-LVL').mouseClicked(changeSlot.bind(null, 0, 'level'));
     select('#btn-FLIP').mouseClicked(changeSlot.bind(null, 0, 'flip'));
@@ -703,7 +703,7 @@ function showModal({ message, type = 'alert', defaultValue = '' }) {
         }
 
         function onKeydown(e) {
-            if (e.key === 'Enter') onOk();
+            if (e.key === 'Enter' || (e.key === ' ' && document.activeElement !== inputEl)) onOk();
             else if (e.key === 'Escape') type === 'alert' ? onOk() : onCancel();
         }
 
@@ -715,7 +715,7 @@ function showModal({ message, type = 'alert', defaultValue = '' }) {
     });
 }
 
-function selectAll() {
+function selectAllSlots() {
     selected = [];
     for (let i = 0; i < hive.slots.length; i++) {
         selected.push(i);
