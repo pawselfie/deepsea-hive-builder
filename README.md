@@ -2,7 +2,7 @@
 
 A web-based hive planning tool for **Bee Swarm Simulator**, fork of Dully's fork of **Hivemind** by t4styl.
 
-Plan your hive layout visually, assign bees, set levels, apply mutations, equip beequips, and export your build — all in the browser, no installation needed.
+Plan your hive layout visually, assign bees, set levels, apply mutations, equip beequips, and export your build — all in the browser, no installation needed, and faster than ever.
 
 ---
 
@@ -12,15 +12,36 @@ Plan your hive layout visually, assign bees, set levels, apply mutations, equip 
 - **Unreleased Beequips** — Has all 12 Unreleased Beequips found in Onett's inventory
 - **Better Style** — A more consistent style made out of a shade of dark blue
 - **Replaced Dialogs** — Dialogs are now their own GUI, and aren't dependant on the browser
+- **Keybinds** — You can do quick actions via Keybinds instead of having to use your mouse
 - **More Utility Buttons:**
-
   - Select All Slots
-
   - Remove Mutation
-
   - Clear Hive
 
-***And more to come!***
+---
+
+## Keybinds
+
+### Menu
+| Key | Action |
+|-----|--------|
+| `Enter` / `Space` | Start a new hive with 50 slots |
+| `I` | Open import hive dialog |
+| `C` | Continue working on saved hive (if one exists) |
+
+### Hive Builder
+| Key | Action |
+|-----|--------|
+| `Ctrl + Z` | Undo last change |
+| `Ctrl + A` | Select all slots |
+| `Ctrl + C` | Copy selected slots |
+| `Ctrl + X` | Cut selected slots |
+| `Ctrl + V` | Paste into selected slot |
+| `Ctrl + I` | Set level on selected slots |
+| `Ctrl + Q` | Clear hive |
+| `Shift + Click` | Add slot to selection |
+| `Shift + Drag` | Drag-select multiple slots |
+
 ---
 
 ## Contact

@@ -186,7 +186,7 @@ function drawHive(x, y, radius, slots, level, mutation, beequip) {
             }
         }
         if (isNormal) {
-            hexesNormal = [...hexes];
+            hexesNormal = hexes.map(h => ({...h}));
         }
 
     }
@@ -232,7 +232,7 @@ function drawHive(x, y, radius, slots, level, mutation, beequip) {
             }
         }
         if (isNormal) {
-            hexesNormal = [...hexes];
+            hexesNormal = hexes.map(h => ({...h}));
         }
     }
 }

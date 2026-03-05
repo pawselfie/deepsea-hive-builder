@@ -5,6 +5,9 @@ HTMLCanvasElement.prototype.getContext = function(type, attrs) {
 };
 
 let mode, cnv, fnt, hive, hiveSaved, hexes, hexesNormal, selected, multSelt, gifted, bee_btns, bqp_btns, mut_btns, dragging=false;
+let undoStack = [];
+let slotClipboard = null;
+let lastCtrlQTime = 0;
 const bee_imgs = {};
 const bqp_imgs = {};
 const queryString = window.location.search;
@@ -279,6 +282,7 @@ function setup() {
     select('#removeBeequip').mouseClicked(changeSlot.bind(null, 0, 'removequip'));
     select('#removeMutation').mouseClicked(changeSlot.bind(null, null, 'removemut'));
     select('#clearHive').mouseClicked(clearHive);
+    select('#shareURL').mouseClicked(shareURL);
 
     gifted = createCheckbox('gifted (alt)', true)
         .id('giftedSelect')
@@ -363,7 +367,7 @@ function mouseClicked() {
             for (const [i, v] of hexes.entries()) {
                 if (dist(mouseX, mouseY, v.x, v.y) <= 25) {
                     if (!keyIsDown(SHIFT) && !multSelt.checked()) {
-                        hexes = hexesNormal.splice();
+                        hexes = hexesNormal.slice();
                         selected = [];
                     }
                     onSlot = true;
@@ -372,7 +376,7 @@ function mouseClicked() {
             }
             if (!onSlot && !keyIsDown(SHIFT)) {
                 selected = [];
-                hexes = hexesNormal.splice();
+                hexes = hexesNormal.slice();
             }
         }
     }
@@ -426,6 +430,7 @@ async function setMode(m, loaded=false) {
                 }
             }
         }
+        undoStack = [];
         mode = 'menu';
         cnv.parent(select('#menu > .canvasContainer'));
         resizeCanvas(957, 506);
@@ -469,6 +474,7 @@ function madeChanges() {
 }
 
 function addSlot() {
+    saveUndoState();
     hive.slots.push('U');
     hive.level.push(0);
     hive.mutation.push(null);
@@ -476,6 +482,7 @@ function addSlot() {
 }
 
 function removeSlot() {
+    saveUndoState();
     hive.slots.pop();
     hive.level.pop();
     hive.mutation.pop();
@@ -487,6 +494,7 @@ async function changeName() {
     if (!x) {
         return;
     }
+    saveUndoState();
     hive.name = x.substring(0, 15);
 }
 
@@ -563,6 +571,7 @@ async function importText() {
     if (!jsonStr) { return; }
     try {
         const hiveData = JSON.parse(jsonStr);
+        saveUndoState();
         hive.name = hiveData.name;
         hive.slots = hiveData.slots || [];
         hive.level = hiveData.level || [];
@@ -592,6 +601,7 @@ async function changeSlot(type, category) {
             hive.slots.push('U');
         }
     }
+    saveUndoState();
     let uniqueSelected = [...new Set(selected)];
     let level = null;
     if (category === 'level') {
@@ -623,17 +633,18 @@ async function changeSlot(type, category) {
         }
     }
     selected = [];
-    hexes = hexesNormal.splice();
+    hexes = hexesNormal.slice();
 }
 
 async function clearHive() {
     if (!await showModal({ message: 'Clear all bees, beequips, and mutations from every slot?', type: 'confirm' })) return;
+    saveUndoState();
     const n = hive.slots.length;
     hive.slots = new Array(n).fill('U');
     hive.mutation = new Array(n).fill(null);
     hive.beequip = new Array(n).fill(null);
     selected = [];
-    hexes = hexesNormal.splice();
+    hexes = hexesNormal.slice();
 }
 
 function checkWindowSize() {
@@ -701,5 +712,103 @@ function selectAllSlots() {
     selected = [];
     for (let i = 0; i < hive.slots.length; i++) {
         selected.push(i);
+    }
+}
+
+function saveUndoState() {
+    undoStack.push(JSON.parse(JSON.stringify(hive)));
+    if (undoStack.length > 20) undoStack.shift();
+}
+
+function undo() {
+    if (undoStack.length === 0) return;
+    hive = undoStack.pop();
+    selected = [];
+    hexes = [];
+}
+
+function copySelection() {
+    if (selected.length === 0) return;
+    const idx = [...new Set(selected)].sort((a, b) => a - b);
+    slotClipboard = {
+        slots:    idx.map(i => hive.slots[i]),
+        level:    idx.map(i => hive.level[i]),
+        mutation: idx.map(i => hive.mutation[i]),
+        beequip:  idx.map(i => hive.beequip[i])
+    };
+}
+
+function cutSelection() {
+    copySelection();
+    if (!slotClipboard) return;
+    saveUndoState();
+    for (const i of [...new Set(selected)]) {
+        hive.slots[i] = 'U';
+        hive.level[i] = 0;
+        hive.mutation[i] = null;
+        hive.beequip[i] = null;
+    }
+    selected = [];
+    hexes = hexesNormal.slice();
+}
+
+function pasteSelection() {
+    if (!slotClipboard || selected.length === 0) return;
+    saveUndoState();
+    const idx = [...new Set(selected)].sort((a, b) => a - b);
+    const len = slotClipboard.slots.length;
+    for (let j = 0; j < idx.length; j++) {
+        const i = idx[j], s = j % len;
+        hive.slots[i]    = slotClipboard.slots[s];
+        hive.level[i]    = slotClipboard.level[s];
+        hive.mutation[i] = slotClipboard.mutation[s];
+        hive.beequip[i]  = slotClipboard.beequip[s];
+    }
+    selected = [];
+    hexes = hexesNormal.slice();
+}
+
+async function shareURL() {
+    const url = `${location.origin}${location.pathname}?hive=${encodeURIComponent(JSON.stringify(hive))}`;
+    await navigator.clipboard.writeText(url);
+    showModal({ message: 'Share URL copied to clipboard!', type: 'alert' });
+}
+
+function keyPressed() {
+    if (mode === 'menu') {
+        if (document.getElementById('modal-overlay').classList.contains('active')) return;
+        if (key === 'Enter' || key === ' ') {
+            hive = {
+                name: 'hive',
+                slots: new Array(50).fill('U'),
+                level: new Array(50).fill(0),
+                mutation: new Array(50).fill(null),
+                beequip: new Array(50).fill(null)
+            };
+            hexes = [];
+            hexesNormal = [];
+            mode = 'app';
+            hiveSaved = false;
+            cnv.parent(select('#app > .canvasContainer'));
+            resizeCanvas(472, 563);
+            select('#menu').attribute('data-status', 'inactive');
+            select('#app').attribute('data-status', 'active');
+            return false;
+        }
+        if (key === 'i' || key === 'I') { importText(); return false; }
+        if ((key === 'c' || key === 'C') && getItem('hive')) { loadHive(); return false; }
+        return;
+    }
+    if (mode !== 'app') return;
+    if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+    if (!keyIsDown(CONTROL)) return;
+    const k = key.toLowerCase();
+    if (k === 'z') { undo(); return false; }
+    if (k === 'a') { selectAllSlots(); return false; }
+    if (k === 'c') { copySelection(); return false; }
+    if (k === 'x') { cutSelection(); return false; }
+    if (k === 'v') { pasteSelection(); return false; }
+    if (k === 'i') { changeSlot(0, 'level'); return false; }
+    if (k === 'q') { clearHive(); return false;
     }
 }
