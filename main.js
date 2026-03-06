@@ -8,6 +8,181 @@ let mode, cnv, fnt, hive, hiveSaved, hexes, hexesNormal, selected, multSelt, gif
 let undoStack = [];
 let redoStack = [];
 let slotClipboard = null;
+
+const RARITY_COLORS = {
+    Common: '#bc8034', Rare: '#d0d1d8', Epic: '#e0bf09',
+    Legendary: '#4ffff0', Mythic: '#b79ef7', Event: '#93dc62'
+};
+
+const BEE_INFO = {
+    BA:  { name:'Basic Bee',      rarity:'Common',    color:'Colorless', gifted:'x1.2 Pollen',                               energy:20,       speed:14,    attack:1, gatherAmt:10,       gatherSpd:4,    convertAmt:80,   convertSpd:4,    passive:null,                         tokens:[],                                             likes:['Sunflower','Clover','Mountain Top'],              dislikes:['Spider'] },
+    BO:  { name:'Bomber Bee',     rarity:'Rare',      color:'Colorless', gifted:'x1.1 Bomb Pollen',                          energy:20,       speed:15.4,  attack:2, gatherAmt:10,       gatherSpd:4,    convertAmt:120,  convertSpd:4,    passive:null,                         tokens:['Buzz Bomb'],                                  likes:['Dandelion','Cactus'],                             dislikes:['Pumpkin'] },
+    BR:  { name:'Brave Bee',      rarity:'Rare',      color:'Colorless', gifted:'+1 Bee Attack',                             energy:30,       speed:16.8,  attack:5, gatherAmt:10,       gatherSpd:4,    convertAmt:200,  convertSpd:4,    passive:null,                         tokens:[],                                             likes:['Spider','Clover'],                                dislikes:['Dandelion'] },
+    BU:  { name:'Bumble Bee',     rarity:'Rare',      color:'Blue',      gifted:'x1.1 Capacity',                             energy:50,       speed:10.5,  attack:1, gatherAmt:18,       gatherSpd:4,    convertAmt:80,   convertSpd:4,    passive:null,                         tokens:['Blue Bomb'],                                  likes:['Blue Flower','Pine Tree','Stump'],                dislikes:['Mushroom'] },
+    CO:  { name:'Cool Bee',       rarity:'Rare',      color:'Blue',      gifted:'x1.1 Blue Pollen',                          energy:20,       speed:14,    attack:2, gatherAmt:10,       gatherSpd:3,    convertAmt:120,  convertSpd:4,    passive:null,                         tokens:['Blue Boost'],                                 likes:['Bamboo','Pine Tree'],                             dislikes:['Strawberry'] },
+    HA:  { name:'Hasty Bee',      rarity:'Rare',      color:'Colorless', gifted:'+15% Player Movespeed',                     energy:20,       speed:19.6,  attack:1, gatherAmt:10,       gatherSpd:3,    convertAmt:80,   convertSpd:3,    passive:null,                         tokens:['Haste'],                                      likes:['Sunflower','Cactus'],                             dislikes:['Pumpkin','Stump'] },
+    LO:  { name:'Looker Bee',     rarity:'Rare',      color:'Colorless', gifted:'+25% Critical Power',                       energy:20,       speed:14,    attack:1, gatherAmt:13,       gatherSpd:4,    convertAmt:160,  convertSpd:4,    passive:null,                         tokens:['Focus'],                                      likes:['Clover','Mountain Top'],                          dislikes:['Sunflower'] },
+    RA:  { name:'Rad Bee',        rarity:'Rare',      color:'Red',       gifted:'x1.1 Red Pollen',                           energy:20,       speed:14,    attack:1, gatherAmt:13,       gatherSpd:4,    convertAmt:80,   convertSpd:3,    passive:null,                         tokens:['Red Boost'],                                  likes:['Rose','Mushroom'],                                dislikes:['Pine Tree'] },
+    RAS: { name:'Rascal Bee',     rarity:'Rare',      color:'Red',       gifted:'x1.25 Red Bomb Pollen',                     energy:20,       speed:16.1,  attack:3, gatherAmt:10,       gatherSpd:4,    convertAmt:80,   convertSpd:4,    passive:null,                         tokens:['Red Bomb'],                                   likes:['Rose','Mushroom'],                                dislikes:['Pine Tree'] },
+    ST:  { name:'Stubborn Bee',   rarity:'Rare',      color:'Colorless', gifted:'+15% Token Lifespan',                       energy:20,       speed:11.9,  attack:2, gatherAmt:10,       gatherSpd:4,    convertAmt:80,   convertSpd:3,    passive:null,                         tokens:['Pollen Mark'],                                likes:['Dandelion','Pineapple'],                          dislikes:['Rose'] },
+    BUB: { name:'Bubble Bee',     rarity:'Epic',      color:'Blue',      gifted:'x1.25 Bubble Pollen',                       energy:20,       speed:16.1,  attack:3, gatherAmt:10,       gatherSpd:4,    convertAmt:160,  convertSpd:4,    passive:'Gathering Bubbles',          tokens:['Blue Bomb'],                                  likes:['Blue Flower','Pine Tree'],                        dislikes:['Strawberry'] },
+    BUC: { name:'Bucko Bee',      rarity:'Epic',      color:'Blue',      gifted:'+20% Blue Field Capacity',                  energy:30,       speed:15.4,  attack:5, gatherAmt:17,       gatherSpd:4,    convertAmt:80,   convertSpd:3,    passive:null,                         tokens:['Blue Boost'],                                 likes:['Pine Tree','Bamboo','Blue Flower'],                dislikes:['Rose','Strawberry'] },
+    COM: { name:'Commander Bee',  rarity:'Epic',      color:'Colorless', gifted:'+3% Critical Chance',                       energy:30,       speed:14,    attack:4, gatherAmt:15,       gatherSpd:4,    convertAmt:80,   convertSpd:4,    passive:null,                         tokens:['Buzz Bomb','Focus'],                          likes:['Cactus','Spider'],                                dislikes:['Dandelion'] },
+    DE:  { name:'Demo Bee',       rarity:'Epic',      color:'Colorless', gifted:'x1.25 Buzz Bomb Pollen',                    energy:20,       speed:16.8,  attack:3, gatherAmt:10,       gatherSpd:4,    convertAmt:200,  convertSpd:4,    passive:null,                         tokens:['Buzz Bomb+'],                                 likes:['Cactus','Dandelion'],                             dislikes:['Rose'] },
+    EX:  { name:'Exhausted Bee',  rarity:'Epic',      color:'Colorless', gifted:'+20% White Field Capacity',                 energy:Infinity, speed:10.5,  attack:1, gatherAmt:10,       gatherSpd:4.6,  convertAmt:240,  convertSpd:4,    passive:null,                         tokens:['Buzz Bomb','Token Link'],                     likes:['Sunflower','Dandelion','Stump'],                  dislikes:['Cactus'] },
+    FI:  { name:'Fire Bee',       rarity:'Epic',      color:'Red',       gifted:'x1.25 Flame Pollen',                        energy:25,       speed:11.2,  attack:4, gatherAmt:10,       gatherSpd:4,    convertAmt:80,   convertSpd:4,    passive:'Gathering Flames',           tokens:['Red Bomb+'],                                  likes:['Mushroom','Strawberry'],                          dislikes:['Pine Tree'] },
+    FR:  { name:'Frosty Bee',     rarity:'Epic',      color:'Blue',      gifted:'x1.25 Blue Bomb Pollen',                    energy:25,       speed:11.2,  attack:1, gatherAmt:10,       gatherSpd:4,    convertAmt:80,   convertSpd:4,    passive:null,                         tokens:['Blue Bomb+','Blue Boost'],                    likes:['Blue Flower','Mountain Top'],                     dislikes:['Mushroom'] },
+    HO:  { name:'Honey Bee',      rarity:'Epic',      color:'Colorless', gifted:'x1.5 Honey From Tokens',                    energy:20,       speed:14,    attack:1, gatherAmt:10,       gatherSpd:4,    convertAmt:360,  convertSpd:2,    passive:null,                         tokens:['Honey Gift','Honey Mark'],                    likes:['Mountain Top','Pumpkin'],                         dislikes:['Spider'] },
+    RAG: { name:'Rage Bee',       rarity:'Epic',      color:'Red',       gifted:'+10% Bee Attack',                           energy:20,       speed:15.4,  attack:4, gatherAmt:10,       gatherSpd:4,    convertAmt:80,   convertSpd:4,    passive:null,                         tokens:['Token Link','Rage'],                          likes:['Rose','Spider'],                                  dislikes:['Blue Flower'] },
+    RI:  { name:'Riley Bee',      rarity:'Epic',      color:'Red',       gifted:'+20% Red Field Capacity',                   energy:25,       speed:15.4,  attack:5, gatherAmt:10,       gatherSpd:2,    convertAmt:140,  convertSpd:4,    passive:null,                         tokens:['Red Boost'],                                  likes:['Rose','Strawberry','Mushroom'],                   dislikes:['Pine Tree','Bamboo'] },
+    SH:  { name:'Shocked Bee',    rarity:'Epic',      color:'Colorless', gifted:'x1.1 White Pollen',                         energy:20,       speed:19.6,  attack:2, gatherAmt:10,       gatherSpd:4,    convertAmt:80,   convertSpd:2,    passive:'-50% Sleep Time',            tokens:['Haste','Token Link'],                         likes:['Spider','Pineapple'],                             dislikes:['Mushroom'] },
+    BAB: { name:'Baby Bee',       rarity:'Legendary', color:'Colorless', gifted:'+25% Loot Luck',                            energy:15,       speed:10.5,  attack:0, gatherAmt:10,       gatherSpd:5,    convertAmt:80,   convertSpd:5,    passive:null,                         tokens:['Baby Love'],                                  likes:['Dandelion','Sunflower','Mushroom','Blue Flower'], dislikes:['Spider','Cactus','Pine Tree','Rose','Stump'] },
+    CA:  { name:'Carpenter Bee',  rarity:'Legendary', color:'Colorless', gifted:'x1.25 Tool Pollen',                         energy:25,       speed:11.2,  attack:4, gatherAmt:10,       gatherSpd:3,    convertAmt:120,  convertSpd:4,    passive:null,                         tokens:['Pollen Mark','Honey Mark+'],                  likes:['Pine Tree','Bamboo'],                             dislikes:['Mountain Top'] },
+    DEM: { name:'Demon Bee',      rarity:'Legendary', color:'Red',       gifted:'+20% Instant Bomb Conversion',              energy:20,       speed:10.5,  attack:8, gatherAmt:35,       gatherSpd:4,    convertAmt:60,   convertSpd:4,    passive:'Gathering Flames+',          tokens:['Red Bomb','Red Bomb+'],                       likes:['Spider','Mushroom'],                              dislikes:['Mountain Top'] },
+    DI:  { name:'Diamond Bee',    rarity:'Legendary', color:'Blue',      gifted:'x1.2 Convert Rate',                         energy:20,       speed:14,    attack:1, gatherAmt:10,       gatherSpd:4,    convertAmt:1000, convertSpd:4,    passive:'Shimmering Honey',           tokens:['Honey Gift+','Blue Boost'],                   likes:['Blue Flower','Pineapple'],                        dislikes:['Rose'] },
+    LI:  { name:'Lion Bee',       rarity:'Legendary', color:'Colorless', gifted:'+5% Gifted Bee Pollen',                     energy:60,       speed:19.6,  attack:9, gatherAmt:20,       gatherSpd:4,    convertAmt:160,  convertSpd:2,    passive:null,                         tokens:['Buzz Bomb+'],                                 likes:['Pineapple','Ant'],                                dislikes:['Clover'] },
+    MU:  { name:'Music Bee',      rarity:'Legendary', color:'Colorless', gifted:'+25% Pollen From Gathering',                energy:20,       speed:16.1,  attack:1, gatherAmt:16,       gatherSpd:4,    convertAmt:240,  convertSpd:4,    passive:null,                         tokens:['Focus','Token Link','Melody'],                likes:['Clover','Dandelion'],                             dislikes:['Cactus'] },
+    NI:  { name:'Ninja Bee',      rarity:'Legendary', color:'Blue',      gifted:'+5% Bee Movespeed',                         energy:20,       speed:21,    attack:4, gatherAmt:10,       gatherSpd:2,    convertAmt:80,   convertSpd:3,    passive:null,                         tokens:['Blue Bomb+','Haste'],                         likes:['Bamboo','Blue Flower'],                           dislikes:['Mushroom'] },
+    SHY: { name:'Shy Bee',        rarity:'Legendary', color:'Red',       gifted:'+5% Bee Ability Pollen',                    energy:40,       speed:18.2,  attack:2, gatherAmt:10,       gatherSpd:2,    convertAmt:320,  convertSpd:4,    passive:'Nectar Lover',               tokens:['Red Bomb','Red Boost'],                       likes:['Strawberry','Pumpkin'],                           dislikes:['Pine Tree'] },
+    BUO: { name:'Buoyant Bee',    rarity:'Mythic',    color:'Blue',      gifted:'x1.2 Capacity',                             energy:60,       speed:14,    attack:3, gatherAmt:15,       gatherSpd:5,    convertAmt:150,  convertSpd:3,    passive:'Balloon Enthusiast',         tokens:['Blue Bomb','Inflate Balloon','Surprise Party (G)'], likes:['Coconut','Mountain Top','Bamboo','Blue Flower'], dislikes:[] },
+    FU:  { name:'Fuzzy Bee',      rarity:'Mythic',    color:'Colorless', gifted:'x1.1 Bomb Power',                           energy:50,       speed:11.9,  attack:3, gatherAmt:100,      gatherSpd:6,    convertAmt:40,   convertSpd:6,    passive:'Fuzzy Coat',                 tokens:['Buzz Bomb+','Fuzz Bombs','Pollen Haze (G)'],   likes:['Pine Tree','Dandelion'],                          dislikes:['Pepper'] },
+    PR:  { name:'Precise Bee',    rarity:'Mythic',    color:'Red',       gifted:'+3% Super-Crit Chance',                     energy:40,       speed:11.2,  attack:8, gatherAmt:20,       gatherSpd:4,    convertAmt:130,  convertSpd:4,    passive:'Sniper (+5% Crit, +3% Super-Crit)', tokens:['Target Practice'],             likes:['Rose','Mountain Top'],                            dislikes:['Pine Tree','Bamboo'] },
+    SP:  { name:'Spicy Bee',      rarity:'Mythic',    color:'Red',       gifted:'+25% Flame Duration',                       energy:20,       speed:14,    attack:5, gatherAmt:14,       gatherSpd:4,    convertAmt:200,  convertSpd:2,    passive:'Steam Engine',               tokens:['Rage','Inferno','Flame Fuel (G)'],             likes:['Pepper'],                                         dislikes:['Stump'] },
+    TA:  { name:'Tadpole Bee',    rarity:'Mythic',    color:'Blue',      gifted:'+25% Bubble Duration',                      energy:10,       speed:11.2,  attack:1, gatherAmt:10,       gatherSpd:6,    convertAmt:120,  convertSpd:4,    passive:'Gathering Bubbles+',         tokens:['Blue Boost','Summon Frog','Baby Love (G)'],   likes:['Pine Tree','Stump'],                              dislikes:['Cactus'] },
+    VE:  { name:'Vector Bee',     rarity:'Mythic',    color:'Colorless', gifted:'+15% Mark Duration',                        energy:45.6,     speed:16.24, attack:5, gatherAmt:18,       gatherSpd:4,    convertAmt:144,  convertSpd:2.72, passive:null,                         tokens:['Pollen Mark+','Triangulate','Mark Surge (G)'], likes:['Coconut','Spider'],                              dislikes:['Pineapple'] },
+    BE:  { name:'Bear Bee',       rarity:'Event',     color:'Colorless', gifted:'+10% Pollen',                               energy:35,       speed:14,    attack:5, gatherAmt:15,       gatherSpd:2,    convertAmt:200,  convertSpd:2,    passive:null,                         tokens:['Bear Morph'],                                 likes:['Pine Tree','Pumpkin'],                            dislikes:['Blue Flower'] },
+    COB: { name:'Cobalt Bee',     rarity:'Event',     color:'Blue',      gifted:'+15% Instant Blue Conversion',              energy:35,       speed:18.2,  attack:6, gatherAmt:10,       gatherSpd:4,    convertAmt:120,  convertSpd:3,    passive:null,                         tokens:['Blue Pulse','Blue Bomb Sync'],                 likes:['Pine Tree','Clover'],                             dislikes:['Pineapple'] },
+    CR:  { name:'Crimson Bee',    rarity:'Event',     color:'Red',       gifted:'+15% Instant Red Conversion',               energy:35,       speed:18.2,  attack:6, gatherAmt:10,       gatherSpd:4,    convertAmt:120,  convertSpd:3,    passive:null,                         tokens:['Red Pulse','Red Bomb Sync'],                   likes:['Rose','Clover'],                                  dislikes:['Pineapple'] },
+    DIG: { name:'Digital Bee',    rarity:'Event',     color:'Colorless', gifted:'+1% Ability Duplication Chance',            energy:20,       speed:11.9,  attack:1, gatherAmt:10,       gatherSpd:4,    convertAmt:80,   convertSpd:4,    passive:'Drive Expansion',            tokens:['Glitch','Mind Hack','Map Corruption (G)'],    likes:['Coconut','Mountain Top','Dandelion'],             dislikes:['Pine Tree'] },
+    FE:  { name:'Festive Bee',    rarity:'Event',     color:'Red',       gifted:'x1.25 Convert Rate at Hive',                energy:20,       speed:16.1,  attack:1, gatherAmt:40,       gatherSpd:4,    convertAmt:150,  convertSpd:1,    passive:null,                         tokens:['Honey Mark','Red Bomb+','Festive Gift','Festive Mark (FW)'], likes:['Pine Tree','Mountain Top','Mushroom'], dislikes:['Blue Flower'] },
+    GU:  { name:'Gummy Bee',      rarity:'Event',     color:'Colorless', gifted:'+5% Honey Per Pollen',                      energy:50,       speed:14,    attack:3, gatherAmt:10,       gatherSpd:4,    convertAmt:700,  convertSpd:4,    passive:null,                         tokens:['Glob','Gumdrop Barrage'],                     likes:['Mountain Top','Pineapple','Stump'],               dislikes:['Pumpkin'] },
+    PH:  { name:'Photon Bee',     rarity:'Event',     color:'Colorless', gifted:'+5% Instant Conversion',                    energy:Infinity, speed:21,    attack:3, gatherAmt:20,       gatherSpd:2,    convertAmt:240,  convertSpd:2,    passive:null,                         tokens:['Haste','Beamstorm'],                          likes:['Pumpkin','Pineapple'],                            dislikes:['Clover'] },
+    PU:  { name:'Puppy Bee',      rarity:'Event',     color:'Colorless', gifted:'+20% Bond From Treats',                     energy:40,       speed:16.1,  attack:2, gatherAmt:25,       gatherSpd:4,    convertAmt:280,  convertSpd:4,    passive:null,                         tokens:['Puppy Love','Fetch'],                         likes:['Clover','Pumpkin'],                               dislikes:['Rose'] },
+    TAB: { name:'Tabby Bee',      rarity:'Event',     color:'Colorless', gifted:'+50% Critical Power',                       energy:28,       speed:16.1,  attack:4, gatherAmt:'10–110', gatherSpd:4,    convertAmt:'160–1760', convertSpd:3, passive:null,                    tokens:['Scratch','Tabby Love'],                       likes:['Clover','Spider'],                                dislikes:['Cactus'] },
+    VI:  { name:'Vicious Bee',    rarity:'Event',     color:'Blue',      gifted:'-15% Monster Respawn Time',                 energy:50,       speed:17.5,  attack:8, gatherAmt:10,       gatherSpd:4,    convertAmt:80,   convertSpd:4,    passive:null,                         tokens:['Blue Bomb+','Impale'],                        likes:['Rose','Cactus'],                                  dislikes:['Dandelion'] },
+    WI:  { name:'Windy Bee',      rarity:'Event',     color:'Colorless', gifted:'+15% Instant White Conv., x2 Cloud Boosts', energy:20,       speed:19.6,  attack:3, gatherAmt:10,       gatherSpd:3,    convertAmt:180,  convertSpd:2,    passive:null,                         tokens:['White Boost','Rain Cloud','Tornado'],         likes:['Coconut','Dandelion'],                            dislikes:['Strawberry','Bamboo'] },
+};
+
+const BQP_INFO = {
+    // Normal beequips
+    AU:   { name:'Autumn Sunhat',       section:'normal',   level:16, color:'Any',  limit:1, beeReq:['Hasty','Bumble','Looker','Exhausted','Diamond','Puppy'],             otherReq:[] },
+    BANG: { name:'Bang Snap',           section:'normal',   level:10, color:'Any',  limit:1, beeReq:[],                                                                    otherReq:['Bees must be Common, Rare, or Epic'] },
+    BEAD: { name:'Bead Lizard',         section:'normal',   level:9,  color:'Any',  limit:1, beeReq:[],                                                                    otherReq:['Bee must be Common or Rare'] },
+    BER:  { name:'Beret',               section:'normal',   level:11, color:'Blue', limit:2, beeReq:[],                                                                    otherReq:[] },
+    BAN:  { name:'Bandage',             section:'normal',   level:3,  color:'Any',  limit:3, beeReq:[],                                                                    otherReq:[] },
+    BOT:  { name:'Bottle Cap',          section:'normal',   level:4,  color:'Any',  limit:2, beeReq:[],                                                                    otherReq:['Bee must be Common or Rare'] },
+    CAMO: { name:'Camo Bandana',        section:'normal',   level:8,  color:'Any',  limit:3, beeReq:[],                                                                    otherReq:['Bee must know "Bomb" ability'] },
+    CAMP: { name:'Camphor Lip Balm',    section:'normal',   level:12, color:'Any',  limit:1, beeReq:['Cool','Stubborn','Bubble','Crimson'],                                otherReq:[] },
+    CAN:  { name:'Candy Ring',          section:'normal',   level:14, color:'Any',  limit:1, beeReq:['Stubborn','Bumble','Honey','Diamond','Festive','Gummy'],              otherReq:[] },
+    CH:   { name:'Charm Bracelet',      section:'normal',   level:12, color:'Any',  limit:1, beeReq:[],                                                                    otherReq:['Bee must be Legendary'] },
+    DEMO: { name:'Demon Talisman',      section:'normal',   level:13, color:'Red',  limit:1, beeReq:['Demon'],                                                             otherReq:['Bee must have a Mutation'] },
+    KA:   { name:'Kazoo',               section:'normal',   level:9,  color:'Any',  limit:1, beeReq:['Brave','Bumble','Bubble','Riley','Shocked','Buoyant'],               otherReq:[] },
+    LE:   { name:'Lei',                 section:'normal',   level:14, color:'Any',  limit:1, beeReq:['Basic','Looker','Stubborn','Hasty','Exhausted'],                     otherReq:[] },
+    PA:   { name:'Paperclip',           section:'normal',   level:7,  color:'Any',  limit:2, beeReq:[],                                                                    otherReq:['Bee must be Rare or Epic'] },
+    PIN:  { name:'Pink Eraser',         section:'normal',   level:12, color:'Any',  limit:1, beeReq:[],                                                                    otherReq:['Bee must have a Convert Amount mutation'] },
+    PI:   { name:'Pink Shades',         section:'normal',   level:10, color:'Any',  limit:1, beeReq:['Basic','Rad','Bomber','Demo','Honey','Shy'],                         otherReq:['Bee must be Gifted'] },
+    RO:   { name:'Rose Headband',       section:'normal',   level:13, color:'Any',  limit:1, beeReq:['Basic','Rascal','Riley','Diamond','Windy','Vicious'],                otherReq:[] },
+    SM:   { name:'Smiley Sticker',      section:'normal',   level:7,  color:'Any',  limit:2, beeReq:[],                                                                    otherReq:['Bee must be Gifted'] },
+    SW:   { name:'Sweatband',           section:'normal',   level:5,  color:'Any',  limit:3, beeReq:[],                                                                    otherReq:[] },
+    TH:   { name:'Thimble',             section:'normal',   level:3,  color:'Any',  limit:3, beeReq:[],                                                                    otherReq:[] },
+    THU:  { name:'Thumbtack',           section:'normal',   level:6,  color:'Red',  limit:2, beeReq:[],                                                                    otherReq:[] },
+    WH:   { name:'Whistle',             section:'normal',   level:8,  color:'Any',  limit:1, beeReq:['Brave','Commander','Rascal','Demo','Cool','Rage'],                   otherReq:[] },
+    // Beesmas beequips
+    BEE:  { name:'Beesmas Top',         section:'beesmas',  level:4,  color:'Any',  limit:3, beeReq:[],                                                                    otherReq:['Bee must be Common or Rare'] },
+    BEES: { name:'Beesmas Tree Hat',    section:'beesmas',  level:10, color:'Any',  limit:3, beeReq:[],                                                                    otherReq:['Bee must have a Mutation'] },
+    BUBB: { name:'Bubble Light',        section:'beesmas',  level:8,  color:'Any',  limit:3, beeReq:[],                                                                    otherReq:['Bee must have Energy Mutation'] },
+    EL:   { name:'Elf Cap',             section:'beesmas',  level:3,  color:'Any',  limit:2, beeReq:[],                                                                    otherReq:[] },
+    ELE:  { name:'Electric Candle',     section:'beesmas',  level:6,  color:'Red',  limit:3, beeReq:[],                                                                    otherReq:[] },
+    FES:  { name:'Festive Wreath',      section:'beesmas',  level:10, color:'Red',  limit:1, beeReq:['Festive'],                                                           otherReq:[] },
+    ICI:  { name:'Icicles',             section:'beesmas',  level:10, color:'Blue', limit:2, beeReq:[],                                                                    otherReq:['Bee must know "Blue Bomb" ability'] },
+    LU:   { name:'Lump Of Coal',        section:'beesmas',  level:13, color:'Any',  limit:3, beeReq:[],                                                                    otherReq:[] },
+    PAP:  { name:'Paper Angel',         section:'beesmas',  level:8,  color:'Any',  limit:2, beeReq:['Bomber','Rascal','Shy','Photon'],                                    otherReq:[] },
+    PINE: { name:'Pinecone',            section:'beesmas',  level:9,  color:'Any',  limit:2, beeReq:['Bumble','Stubborn','Bucko','Frosty','Carpenter','Bear'],             otherReq:[] },
+    PO:   { name:'Poinsettia',          section:'beesmas',  level:6,  color:'Any',  limit:2, beeReq:[],                                                                    otherReq:['Bee must know "Boost" ability'] },
+    RE:   { name:'Reindeer Antlers',    section:'beesmas',  level:8,  color:'Any',  limit:1, beeReq:['Puppy'],                                                             otherReq:[] },
+    SI:   { name:'Single Mitten',       section:'beesmas',  level:6,  color:'Any',  limit:3, beeReq:[],                                                                    otherReq:['Bee must be Rare, Epic, or Legendary'] },
+    SN:   { name:'Snow Tiara',          section:'beesmas',  level:12, color:'Any',  limit:1, beeReq:['Cool','Stubborn','Shocked','Frosty','Diamond','Windy'],              otherReq:['Bee must be Gifted'] },
+    SNO:  { name:'Snowglobe',           section:'beesmas',  level:7,  color:'Any',  limit:2, beeReq:['Basic','Bumble','Cool'],                                             otherReq:[] },
+    TO:   { name:'Toy Horn',            section:'beesmas',  level:9,  color:'Any',  limit:2, beeReq:['Brave','Rage','Lion','Cobalt','Crimson'],                            otherReq:[] },
+    TOY:  { name:'Toy Drum',            section:'beesmas',  level:7,  color:'Any',  limit:2, beeReq:['Brave','Demo','Bucko','Riley'],                                      otherReq:[] },
+    WA:   { name:'Warm Scarf',          section:'beesmas',  level:5,  color:'Any',  limit:3, beeReq:['Basic','Rad','Exhausted','Frosty','Shy'],                            otherReq:[] },
+    PE:   { name:'Peppermint Antennas', section:'beesmas',  level:7,  color:'Any',  limit:3, beeReq:[],                                                                    otherReq:[] },
+    // Unreleased beequips
+    SPS:  { name:'Six-Point Shuriken',    section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    PL:   { name:'Pan Lid',               section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    PB:   { name:'Pink Bow',              section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    OFF:  { name:'Orange Flip Flop',      section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    HH:   { name:'Heroic Helm',           section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    FGS:  { name:'Fidget Spinner',        section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    SC:   { name:'Safety Cone',           section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    CB:   { name:'Charity Bracelet',      section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    RS:   { name:'Round Spectacles',      section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    SH:   { name:'Shell Necklace',        section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    BKM:  { name:"Beekeeper's Medal",     section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    MFP:  { name:'Monster Finger Puppet', section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+};
+
+// Basic Bee stat baseline for comparison coloring
+const BASIC_STATS = { energy: 20, speed: 14, attack: 1, gatherAmt: 10, gatherSpd: 4, convertAmt: 80, convertSpd: 4 };
+
+function buildTooltipHTML(info) {
+    function fmtStat(val, base, lowerIsBetter) {
+        if (val === Infinity) return `<span style="color:#7ef87e">∞</span>`;
+        if (typeof val !== 'number') return String(val);
+        if (val === base) return String(val);
+        const better = lowerIsBetter ? val < base : val > base;
+        return `<span style="color:${better ? '#7ef87e' : '#f87e7e'}">${val}</span>`;
+    }
+    const B = BASIC_STATS;
+    const en  = fmtStat(info.energy,     B.energy,     false);
+    const spd = fmtStat(info.speed,      B.speed,      false);
+    const atk = fmtStat(info.attack,     B.attack,     false);
+    const ga  = fmtStat(info.gatherAmt,  B.gatherAmt,  false);
+    const gs  = fmtStat(info.gatherSpd,  B.gatherSpd,  true);
+    const ca  = fmtStat(info.convertAmt, B.convertAmt, false);
+    const cs  = fmtStat(info.convertSpd, B.convertSpd, true);
+
+    const fmtTokens = info.tokens.map(t => {
+        if (t.endsWith(' (G)')) return `<span style="color:#ffe94a">${t.slice(0, -4)} ★</span>`;
+        return t;
+    }).join(', ');
+
+    let h = `<div class="tt-name">${info.name}</div>`;
+    h += `<div class="tt-meta"><span class="tt-rarity" style="color:${RARITY_COLORS[info.rarity]}">${info.rarity}</span><span class="tt-color">${info.color}</span></div>`;
+    h += `<div class="tt-row"><span class="tt-lbl">Gifted</span><span>${info.gifted}</span></div>`;
+    h += `<div class="tt-row"><span class="tt-lbl">Stats</span><span class="tt-statvals">EN:${en} BMS:${spd} ATK:${atk}</span></div>`;
+    h += `<div class="tt-row"><span class="tt-lbl">Gather</span><span class="tt-statvals">${ga} Pollen / ${gs}s</span></div>`;
+    h += `<div class="tt-row"><span class="tt-lbl">Convert</span><span class="tt-statvals">${ca} Honey / ${cs}s</span></div>`;
+    if (info.passive)              h += `<div class="tt-row"><span class="tt-lbl">Passive</span><span>${info.passive}</span></div>`;
+    if (info.tokens.length)        h += `<div class="tt-row"><span class="tt-lbl">Tokens</span><span>${fmtTokens}</span></div>`;
+    if (info.likes.length)         h += `<div class="tt-row"><span class="tt-lbl">Likes</span><span>${info.likes.join(', ')}</span></div>`;
+    if (info.dislikes.length)      h += `<div class="tt-row"><span class="tt-lbl">Dislikes</span><span>${info.dislikes.join(', ')}</span></div>`;
+    return h;
+}
+
+function buildBqpTooltipHTML(info) {
+    const icon = info.section === 'beesmas' ? '🎄' : info.section === 'unreleased' ? '⚠️' : '📌';
+    let h = `<div class="tt-name">${icon} ${info.name}</div>`;
+    if (info.section === 'unreleased') {
+        h += `<div class="tt-row"><span class="tt-lbl">Status</span><span>Unreleased</span></div>`;
+        return h;
+    }
+    h += `<div class="tt-row"><span class="tt-lbl">Limit</span><span>${info.limit}</span></div>`;
+    h += `<div class="tt-row"><span class="tt-lbl">Level</span><span>${info.level}</span></div>`;
+    h += `<div class="tt-row"><span class="tt-lbl">Color</span><span>${info.color}</span></div>`;
+    if (info.beeReq.length)   h += `<div class="tt-row"><span class="tt-lbl">Bee Req</span><span>${info.beeReq.join(', ')}</span></div>`;
+    if (info.otherReq.length) h += `<div class="tt-row"><span class="tt-lbl">Other Req</span><span>${info.otherReq.join(', ')}</span></div>`;
+    return h;
+}
+
+function positionTooltip(tooltip, e) {
+    const x = e.clientX + 14;
+    const y = e.clientY + 14;
+    const tw = tooltip.offsetWidth;
+    const th = tooltip.offsetHeight;
+    tooltip.style.left = (x + tw > window.innerWidth  ? e.clientX - tw - 10 : x) + 'px';
+    tooltip.style.top  = (y + th > window.innerHeight ? e.clientY - th - 10 : y) + 'px';
+}
 let hideLevels = false;
 let _pendingHiveFromURL = null;
 
@@ -266,6 +441,21 @@ function setup() {
         btn.prepend(img);
     }
 
+    const beeTooltip = document.getElementById('bee-tooltip');
+    for (const wrappedBtn of bee_btns) {
+        const btn = wrappedBtn.elt;
+        const code = btn.id.slice(4);
+        const info = BEE_INFO[code];
+        if (!info) continue;
+        btn.addEventListener('mouseenter', (e) => {
+            beeTooltip.innerHTML = buildTooltipHTML(info);
+            beeTooltip.classList.add('visible');
+            positionTooltip(beeTooltip, e);
+        });
+        btn.addEventListener('mousemove', (e) => positionTooltip(beeTooltip, e));
+        btn.addEventListener('mouseleave', () => beeTooltip.classList.remove('visible'));
+    }
+
     for (const wrappedBtn of bqp_btns) {
         const btn = wrappedBtn.elt;
         const code = btn.id.slice(4);
@@ -275,6 +465,16 @@ function setup() {
         img.draggable = false;
         img.onerror = () => img.style.display = 'none';
         btn.prepend(img);
+        const bqpInfo = BQP_INFO[code];
+        if (bqpInfo) {
+            btn.addEventListener('mouseenter', (e) => {
+                beeTooltip.innerHTML = buildBqpTooltipHTML(bqpInfo);
+                beeTooltip.classList.add('visible');
+                positionTooltip(beeTooltip, e);
+            });
+            btn.addEventListener('mousemove', (e) => positionTooltip(beeTooltip, e));
+            btn.addEventListener('mouseleave', () => beeTooltip.classList.remove('visible'));
+        }
     }
 
     if (_pendingHiveFromURL) {

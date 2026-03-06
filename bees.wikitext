@@ -1,0 +1,425 @@
+{| class="wikitable sortable mw-collapsible" style="text-align: center; font-size: 70%;"
+<!-- test
+|+ Bee Stats Table
+|-
+-->
+! colspan="3" style="text-align:center" | Bee
+! colspan="9" style="text-align:center" | Bee Stats
+! colspan="2" style="text-align:center" | Abilities
+! colspan="2" style="text-align:center" | Tastes
+|-
+! Name !! Rarity
+! Color !! Energy !! Speed !! Attack
+! data-sort-type="number" | Gather Amount !! Gather Speed
+! data-sort-type="number" | Conversion Amount !! Conversion Speed
+! data-sort-type="number" | Other Stats
+! data-sort-type="number" | Gifted Hive Bonus
+! Tokens !! Passive Abilities
+! Likes !! Dislikes
+|-
+| data-sort-value=1|[[File:Basic Bee.png|50px|link=Basic Bee]]<br>[[Basic Bee]] || Common
+| Colorless || 20 || 14 || 1
+| 10 Pollen || 4 s || {{Cost|Honey|80}} || 4 s
+| -
+| x1.2 Pollen
+| - || -
+| <li>Sunflower Field</li> <li>Clover Field</li> <li>Mountain Top Field</li> || <li>Spider Field</li>
+|-
+| data-sort-value=2.01|[[File:Bomber Bee.png|50px|link=Bomber Bee]]<br>[[Bomber Bee]] || Rare
+| Colorless || 20 || 15.4 || 2
+| 10 Pollen || 4 s || {{Cost|Honey|120}} || 4 s
+| -
+| x1.1 Bomb Pollen
+| <li>[[File:Buzz Bomb Token.png|30px|link=Bomb]] [[Buzz Bomb]]</li> || -
+| <li>Dandelion Field</li> <li>Cactus Field</li> || <li>Pumpkin Patch</li>
+|-
+| data-sort-value=2.02|[[File:Brave Bee.png|50px|link=Brave Bee]]<br>[[Brave Bee]] || Rare
+| Colorless || 30 || 16.8 || 5
+| 10 Pollen || 4 s || {{Cost|Honey|200}} || 4 s
+| -
+| +1 Bee Attack
+| - || -
+| <li>Spider Field</li> <li>Clover Field</li> || <li>Dandelion Field</li>
+|-
+| data-sort-value=2.03|[[File:Bumble Bee.png|50px|link=Bumble Bee]]<br>[[Bumble Bee]] || Rare
+| Blue || 50 || 10.5 || 1
+| 18 Pollen || 4 s || {{Cost|Honey|80}} || 4 s
+| -
+| x1.1 Capacity
+| <li>[[File:Blue Bomb Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Blue Bomb]]</li> || -
+| <li>Blue Flower Field</li> <li>Pine Tree Forest</li> <li>Stump Field</li> || <li>Mushroom Field</li>
+|-
+| data-sort-value=2.04|[[File:Cool Bee.png|50px|link=Cool Bee]]<br>[[Cool Bee]] || Rare
+| Blue || 20 || 14 || 2
+| 10 Pollen || 3 s || {{Cost|Honey|120}} || 4 s
+| -
+| x1.1 Blue Pollen
+| <li>[[File:Blue Boost Token.png|30px|link=Ability Tokens#Boost]] [[Ability Tokens#Boost|Blue Boost]]</li> || -
+| <li>Bamboo Field</li> <li>Pine Tree Field</li> || <li>Strawberry Field</li>
+|-
+| data-sort-value=2.05|[[File:Hasty Bee.png|50px|link=Hasty Bee]]<br>[[Hasty Bee]] || Rare
+| Colorless || 20 || 19.6 || 1
+| 10 Pollen || 3 s || {{Cost|Honey|80}} || 3 s
+| -
+| +15% Player Movespeed
+| <li>[[File:Haste Token.png|30px|link=Haste]] [[Haste]]</li> || -
+| <li>Sunflower Field</li> <li>Cactus Field</li> || <li>Pumpkin Patch</li> <li>Stump Field</li>
+|-
+| data-sort-value=2.06|[[File:Looker Bee.png|50px|link=Looker Bee]]<br>[[Looker Bee]] || Rare
+| Colorless || 20 || 14 || 1
+| 13 Pollen || 4 s || {{Cost|Honey|160}} || 4 s
+| -
+| +25% Critical Power
+| <li>[[File:Focus Token.png|30px|link=Focus]] [[Focus]]</li> || -
+| <li>Clover Field</li> <li>Mountain Top Field</li> || <li>Sunflower Field</li>
+|-
+| data-sort-value=2.07|[[File:Rad Bee.png|50px|link=Rad Bee]]<br>[[Rad Bee]] || Rare
+| Red || 20 || 14 || 1
+| 13 Pollen || 4 s || {{Cost|Honey|80}} || 3 s
+| -
+| x1.1 Red Pollen
+| <li>[[File:Red Boost Token.png|30px|link=Ability Tokens#Boost]] [[Ability Tokens#Boost|Red Boost]]</li> || -
+| <li>Rose Field</li> <li>Mushroom Field</li> || <li>Pine Tree Forest</li>
+|-
+| data-sort-value=2.08|[[File:Rascal Bee.png|50px|link=Rascal Bee]]<br>[[Rascal Bee]] || Rare
+| Red || 20 || 16.1 || 3
+| 10 Pollen || 4 s || {{Cost|Honey|80}} || 4 s
+| -
+| x1.25 Red Bomb Pollen
+| <li>[[File:Red Bomb Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Red Bomb]]</li> || -
+| <li>Rose Field</li> <li>Mushroom Field</li> || <li>Pine Tree Forest</li>
+|-
+| data-sort-value=2.09|[[File:Stubborn Bee.png|50px|link=Stubborn Bee]]<br>[[Stubborn Bee]] || Rare
+| Colorless || 20 || 11.9 || 2
+| 10 Pollen || 4 s || {{Cost|Honey|80}} || 3 s
+| -
+| +15% Ability Token Lifespan
+| <li>[[File:Pollen Mark Token.png|30px|link=Ability Tokens#Mark]] [[Ability Tokens#Mark|Pollen Mark]]</li> || -
+| <li>Dandelion Field</li> <li>Pineapple patch</li> || <li>Rose Field</li>
+|-
+| data-sort-value=3.01|[[File:Bubble Bee.png|50px|link=Bubble Bee]]<br>[[Bubble Bee]] || Epic
+| Blue || 20 || 16.1 || 3
+| 10 Pollen || 4 s || {{Cost|Honey|160}} || 4 s
+| -
+| x1.25 Bubble Pollen
+| <li>[[File:Blue Bomb Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Blue Bomb]]</li>
+| [[Passive Abilities#Gathering Bubbles|Gathering Bubbles]]
+| <li>Blue Flower Field</li> <li>Pine Tree Forest</li> || <li>Strawberry Field</li>
+|-
+| data-sort-value=3.02|[[File:Bucko Bee.png|50px|link=Bucko Bee]]<br>[[Bucko Bee]] || Epic
+| Blue || 30 || 15.4 || 5
+| 17 Pollen || 4 s || {{Cost|Honey|80}} || 3 s
+| -
+| +20% Blue Field Capacity
+| <li>[[File:Blue Boost Token.png|30px|link=Ability Tokens#Boost]] [[Ability Tokens#Boost|Blue Boost]]</li>
+| -
+| <li>Pine Tree Forest</li> <li>Bamboo Field</li> <li>Blue Flower Field</li> || <li>Rose Field</li> <li>Strawberry Field</li>
+|-
+| data-sort-value=3.03|[[File:Commander Bee.png|50px|link=Commander Bee]]<br>[[Commander Bee]] || Epic
+| Colorless || 30 || 14 || 4
+| 15 Pollen || 4 s || {{Cost|Honey|80}} || 4 s
+| -
+| +3% Critical Chance
+| <li>[[File:Buzz Bomb Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Buzz Bomb]]</li> <li>[[File:Focus Token.png|30px|link=Focus]] [[Focus]]</li>
+| -
+| <li>Cactus Field</li> <li>Spider Field</li> || <li>Dandelion Field</li>
+|-
+| data-sort-value=3.04|[[File:Demo Bee.png|50px|link=Demo Bee]]<br>[[Demo Bee]] || Epic
+| Colorless || 20 || 16.8 || 3
+| 10 Pollen || 4 s || {{Cost|Honey|200}} || 4 s
+| -
+| x1.25 Buzz Bomb Pollen
+| <li>[[File:Buzz Bomb+ Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Buzz Bomb+]]</li>
+| -
+| <li>Cactus Field</li> <li>Dandelion Field</li> || <li>Rose Field</li>
+|-
+| data-sort-value=3.05|[[File:Exhausted Bee.png|50px|link=Exhausted Bee]]<br>[[Exhausted Bee]] || Epic
+| Colorless || data-sort-value=250 | Unlimited || 10.5 || 1
+| 10 Pollen || 4.6 s || {{Cost|Honey|240}} || 4 s
+| -
+| +20% White Field Capacity
+| <li>[[File:Buzz Bomb Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Buzz Bomb]]</li> <li>[[File:Token Link Token.png|30px|link=Token Link]] [[Token Link]]</li>
+| -
+| <li>Sunflower Field</li> <li>Dandelion Field</li> <li>Stump Field</li> || <li>Cactus Field</li>
+|-
+| data-sort-value=3.06|[[File:Fire Bee.png|50px|link=Fire Bee]]<br>[[Fire Bee]] || Epic
+| Red || 25 || 11.2 || 4
+| 10 Pollen || 4 s || {{Cost|Honey|80}} || 4 s
+| -
+| x1.25 Flame Pollen
+| <li>[[File:Red Bomb+ Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Red Bomb+]]</li>
+| [[Passive Abilities#Gathering Flames|Gathering Flames]]
+| <li>Mushroom Field</li> <li>Strawberry Field</li> || <li>Pine Tree Forest</li>
+|-
+| data-sort-value=3.07|[[File:Frosty Bee.png|50px|link=Frosty Bee]]<br>[[Frosty Bee]] || Epic
+| Blue || 25 || 11.2 || 1
+| 10 Pollen || 4 s || {{Cost|Honey|80}} || 4 s
+| -
+| x1.25 Blue Bomb Pollen
+| <li>[[File:Blue Bomb+ Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Blue Bomb+]]</li> <li>[[File:Blue Boost Token.png|30px|link=Ability Tokens#Boost]] [[Ability Tokens#Bomb|Blue Boost]]</li>
+| -
+| <li>Blue Flower Field</li> <li>Mountain Top Field</li> || <li>Mushroom Field</li>
+|-
+| data-sort-value=3.08|[[File:Honey Bee.png|50px|link=Honey Bee]]<br>[[Honey Bee]] || Epic
+| Colorless || 20 || 14 || 1
+| 10 Pollen || 4 s || {{Cost|Honey|360}} || 2 s
+| -
+| x1.5 Honey From Tokens
+| <li>[[File:Honey Token.png|30px|link=Honey Gift]] [[Honey Gift]]</li> <li>[[File:Honey Mark Token.png|30px|link=Ability Tokens#Mark]] [[Ability Tokens#Mark|Honey Mark]]</li>
+| -
+| <li>Mountain Top Field</li> <li>Pumpkin Patch</li> || <li>Spider Field</li>
+|-
+| data-sort-value=3.09|[[File:Rage Bee.png|50px|link=Rage Bee]]<br>[[Rage Bee]] || Epic
+| Red || 20 || 15.4 || 4
+| 10 Pollen || 4 s || {{Cost|Honey|80}} || 4 s
+| -
+| +10% Bee Attack
+| <li>[[File:Token Link Token.png|30px|link=Token Link]] [[Token Link]]</li> <li>[[File:Rage Token.png|30px|link=Rage]] [[Rage]]</li>
+| -
+| <li>Rose Field</li> <li>Spider Field</li> || <li>Blue Flower Field</li>
+|-
+| data-sort-value=3.10|[[File:Riley Bee.png|50px|link=Riley Bee]]<br>[[Riley Bee]] || Epic
+| Red || 25 || 15.4 || 5
+| 10 Pollen || 2 s || {{Cost|Honey|140}} || 4 s
+| -
+| +20% Red Field Capacity
+| <li>[[File:Red Boost Token.png|30px|link=Ability Tokens#Boost]] [[Ability Tokens#Bomb|Red Boost]]</li>
+| -
+| <li>Rose Field</li> <li>Strawberry Field</li> <li>Mushroom Field</li> || <li>Pine Tree Forest</li> <li>Bamboo Field</li>
+|-
+| data-sort-value=3.11|[[File:Shocked Bee.png|50px|link=Shocked Bee]]<br>[[Shocked Bee]] || Epic
+| Colorless || 20 || 19.6 || 2
+| 10 Pollen || 4 s || {{Cost|Honey|80}} || 2 s
+| <li>-50% Sleep Time</li>
+| x1.1 White Pollen
+| <li>[[File:Haste Token.png|30px|link=Haste]] [[Haste]]</li> <li>[[File:Token Link Token.png|30px|link=Token Link]] [[Token Link]]</li>
+| -
+| <li>Spider Field</li> <li>Pineapple Patch</li> || <li>Mushroom Field</li>
+|-
+| data-sort-value=4.01|[[File:Baby Bee.png|50px|link=Baby Bee]]<br>[[Baby Bee]] || Legendary
+| Colorless || 15 || 10.5 || 0
+| 10 Pollen || 5 s || {{Cost|Honey|80}} || 5 s
+| -
+| +25% Loot Luck
+| <li>[[File:Baby Love Token.png|30px|link=Baby Love]] [[Baby Love]]</li>
+| -
+| <li>Dandelion Field</li> <li>Sunflower Field</li> <li>Mushroom Field</li> <li>Blue Flower Field</li> || <li>Spider Field</li> <li>Cactus Field</li> <li>Pine Tree Forest</li> <li>Rose Field</li> <li>Stump Field</li>
+|-
+| data-sort-value=4.02|[[File:Carpenter Bee.png|50px|link=Carpenter Bee]]<br>[[Carpenter Bee]] || Legendary
+| Colorless || 25 || 11.2 || 4
+| 10 Pollen || 3 s || {{Cost|Honey|120}} || 4 s
+| -
+| x1.25 Tool Pollen
+| <li>[[File:Pollen Mark Token.png|30px|link=Ability Tokens#Mark]] [[Ability Tokens#Mark|Pollen Mark]]</li> <li>[[File:Honey Mark Token.png|30px|link=Ability Tokens#Mark]] [[Ability Tokens#Mark|Honey Mark+]]</li>
+| -
+| <li>Pine Tree Forest</li> <li>Bamboo Field</li> || <li>Mountain Top Field</li>
+|-
+| data-sort-value=4.03|[[File:Demon Bee.png|50px|link=Demon Bee]]<br>[[Demon Bee]] || Legendary
+| Red || 20 || 10.5 || 8
+| 35 Pollen || 4 s || {{Cost|Honey|60}} || 4 s
+| -
+| +20% Instant Bomb Conversion
+| <li>[[File:Red Bomb Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Red Bomb]]</li> <li>[[File:Red Bomb+ Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Red Bomb+]]</li>
+| [[Passive Abilities#Gathering Flames|Gathering Flames+]]
+| <li>Spider Field</li> <li>Mushroom Field</li> || <li>Mountain Top Field</li>
+|-
+| data-sort-value=4.04|[[File:Diamond Bee.png|50px|link=Diamond Bee]]<br>[[Diamond Bee]] || Legendary
+| Blue || 20 || 14 || 1
+| 10 Pollen || 4 s || {{Cost|Honey|1000}} || 4 s
+| -
+| x1.2 Convert Rate
+| <li>[[File:Honey Token.png|30px|link=Honey Gift]] [[Honey Gift|Honey Gift+]]</li> <li>[[File:Blue Boost Token.png|30px|link=Ability Tokens#Boost]] [[Ability Tokens#Boost|Blue Boost]]</li>
+| [[Passive Abilities#Shimmering Honey|Shimmering Honey]]
+| <li>Blue Flower Field</li> <li>Pineapple Patch</li> || <li>Rose Field</li>
+|-
+| data-sort-value=4.05|[[File:Lion Bee.png|50px|link=Lion Bee]]<br>[[Lion Bee]] || Legendary
+| Colorless || 60 || 19.6 || 9
+| 20 Pollen || 4 s || {{Cost|Honey|160}} || 2 s
+| -
+| +5% Gifted Bee Pollen
+| <li>[[File:Buzz Bomb+ Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Buzz Bomb+]]</li>
+| -
+| <li>Pineapple Patch</li> <li>Ant Field</li> || <li>Clover Field</li>
+|-
+| data-sort-value=4.06|[[File:Music Bee.png|50px|link=Music Bee]]<br>[[Music Bee]] || Legendary
+| Colorless || 20 || 16.1 || 1
+| 16 Pollen || 4 s || {{Cost|Honey|240}} || 4 s
+| -
+| +25% Pollen From Bee Gathering
+| <li>[[File:Focus Token.png|30px|link=Focus]] [[Focus]]</li> <li>[[File:Token Link Token.png|30px|link=Token Link]] [[Token Link]]</li> <li>[[File:Melody Token.png|30px|link=Melody]] [[Melody]]</li>
+| -
+| <li>Clover Field</li> <li>Dandelion Field</li> || <li>Cactus Field</li>
+|-
+| data-sort-value=4.07|[[File:Ninja Bee.png|50px|link=Ninja Bee]]<br>[[Ninja Bee]] || Legendary
+| Blue || 20 || 21 || 4
+| 10 Pollen || 2 s || {{Cost|Honey|80}} || 3 s
+| -
+| +5% Bee Movespeed
+| <li>[[File:Blue Bomb+ Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Blue Bomb+]]</li> <li>[[File:Haste Token.png|30px|link=Haste]] [[Haste]]</li>
+| -
+| <li>Bamboo Field</li> <li>Blue Flower Field</li> || <li>Mushroom Field</li>
+|-
+| data-sort-value=4.08|[[File:Shy Bee.png|50px|link=Shy Bee]]<br>[[Shy Bee]] || Legendary
+| Red || 40 || 18.2 || 2
+| 10 Pollen || 2 s || {{Cost|Honey|320}} || 4 s
+| -
+| +5% Bee Ability Pollen
+| <li>[[File:Red Bomb Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Red Bomb]]</li> <li>[[File:Red Boost Token.png|30px|link=Ability Tokens#Boost]] [[Ability Tokens#Boost|Red Boost]]</li>
+| [[Passive Abilities#Nectar Lover|Nectar Lover]]
+| <li>Strawberry Field</li> <li>Pumpkin Patch</li> || <li>Pine Tree Forest</li>
+|-
+| data-sort-value=5.01|[[File:Buoyant Bee.png|50px|link=Buoyant Bee]]<br>[[Buoyant Bee]] || Mythic
+| Blue || 60 || 14 || 3
+| 15 Pollen || 5 s || {{Cost|Honey|150}} || 3 s
+| -
+| x1.2 Capacity
+| <li>[[File:Blue Bomb Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Blue Bomb]]</li> <li>[[File:Inflate Balloon Token.png|30px|link=Ability Tokens#Inflate Balloon|Inflate Balloon]] [[Ability Tokens#Inflate Balloon|Inflate Balloon]]</li> <li>[[File:Surprise Party Token.png|30px|link=Ability Tokens#Surprise Party|Surprise Party]] [[Ability Tokens#Surprise Party|Surprise Party]] (Gifted)</li>
+| [[Passive Abilities#Balloon Enthusiast|Balloon Enthusiast]]
+| <li>Coconut Field</li> <li>Mountain Top Field</li> <li>Bamboo Field</li> <li>Blue Flower Field</li> || -
+|-
+| data-sort-value=5.02|[[File:Fuzzy Bee.png|50px|link=Fuzzy Bee]]<br>[[Fuzzy Bee]] || Mythic
+| Colorless || 50 || 11.9 || 3
+| 100 Pollen || 6 s || {{Cost|Honey|40}} || 6 s
+| -
+| x1.1 Bomb Power
+| <li>[[File:Buzz Bomb+ Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Buzz Bomb+]]</li> <li>[[File:Fuzz Bombs Token.png|30px|link=Ability Tokens#Fuzz Bombs|Fuzz Bombs]] [[Ability Tokens#Fuzz Bombs|Fuzz Bombs]]</li> <li>[[File:Pollen Haze Token.png|30px|link=Ability Tokens#Pollen Haze|Pollen Haze]] [[Ability Tokens#Pollen Haze|Pollen Haze]] (Gifted)</li>
+| [[Passive Abilities#Fuzzy Coat|Fuzzy Coat]]
+| <li>Pine Tree Forest</li> <li>Dandelion Field</li> || <li>Pepper Patch</li>
+|-
+| data-sort-value=5.03|[[File:Precise Bee.png|50px|link=Precise Bee]]<br>[[Precise Bee]] || Mythic
+| Red || 40 || 11.2 || 8
+| 20 Pollen || 4 s || {{Cost|Honey|130}} || 4 s
+| <li>+5% Critical Chance</li> <li>+3% Super-Crit Chance</li>
+| +3% Super-Crit Chance
+| <li>[[File:Target Pratice Token.png|30px|link=Ability Tokens#Target Practice|Target Practice]] [[Ability Tokens#Target Practice|Target Practice]]</li>
+| [[Passive Abilities#Sniper|Sniper]]
+| <li>Rose Field</li> <li>Mountain Top Field</li> || <li>Pine Tree Forest</li> <li>Bamboo Field</li>
+|-
+| data-sort-value=5.04|[[File:Spicy Bee.png|50px|link=Spicy Bee]]<br>[[Spicy Bee]] || Mythic
+| Red || 20 || 14 || 5
+| 14 Pollen || 4 s || {{Cost|Honey|200}} || 2 s
+| -
+| +25% Flame Duration
+| <li>[[File:Rage Token.png|30px|link=Rage]] [[Rage]]</li> <li>[[File:Inferno Token.png|30px|link=Ability Tokens#Inferno|Inferno]] [[Ability Tokens#Inferno|Inferno]]</li> <li>[[File:Flame Fuel.png|30px|link=Ability Tokens#Flame Fuel|Flame Fuel]] [[Ability Tokens#Flame Fuel|Flame Fuel]] (Gifted)</li>
+| [[Passive Abilities#Steam Engine|Steam Engine]]
+| <li>Pepper Patch</li> || <li>Stump Field</li>
+|-
+| data-sort-value=5.05|[[File:Tadpole Bee.png|50px|link=Tadpole Bee]]<br>[[Tadpole Bee]] || Mythic
+| Blue || 10 || 11.2 || 1
+| 10 Pollen || 6 s || {{Cost|Honey|120}} || 4 s
+| -
+| +25% Bubble Duration
+| <li>[[File:Blue Boost Token.png|30px|link=Ability Tokens#Boost]] [[Ability Tokens#Bomb|Blue Boost]]</li> <li>[[File:Baby Love Token.png|30px|link=Baby Love]] [[Baby Love]] (Gifted)</li> <li>[[File:Summon Frog.png|30px|link=Ability Tokens#Summon Frog|Summon Frog]] [[Ability Tokens#Summon Frog|Summon Frog]]</li>
+| [[Passive Abilities#Gathering Bubbles|Gathering Bubbles+]]
+| <li>Pine Tree Forest</li> <li>Stump Field</li> || <li>Cactus Field</li>
+|-
+| data-sort-value=5.06|[[File:Vector Bee.png|50px|link=Vector Bee]]<br>[[Vector Bee]] || Mythic
+| Colorless || 45.6 || 16.24 || 5
+| 18 Pollen || 4 s || {{Cost|Honey|144}} || 2.72 s
+| -
+| +15% Mark Duration
+| <li>[[File:Pollen Mark Token.png|30px|link=Ability Tokens#Mark]] [[Ability Tokens#Mark|Pollen Mark+]]</li> <li>[[File:Triangulate Token.png|30px|link=Ability Tokens#Triangulate|Triangulate]] [[Ability Tokens#Triangulate|Triangulate]]</li> <li>[[File:Mark Surge Token.png|30px|link=Ability Tokens#Mark Surge|Mark Surge]] [[Ability Tokens#Mark Surge|Mark Surge]] (Gifted)</li>
+| -
+| <li>Coconut Field</li> <li>Spider Field</li> || <li>Pineapple Patch</li>
+|-
+| data-sort-value=6.01|[[File:Bear Bee.png|50px|link=Bear Bee]]<br>[[Bear Bee]] || Event
+| Colorless || 35 || 14 || 5
+| 15 Pollen || 2 s || {{Cost|Honey|200}} || 2 s
+| -
+| +10% Pollen
+| <li>[[File:Bear Morph All.gif|30px|link=Bear Morph]] [[Bear Morph]]</li>
+| -
+| <li>Pine Tree Forest</li> <li>Pumpkin Patch</li> || <li>Blue Flower Field</li>
+|-
+| data-sort-value=6.02|[[File:Cobalt Bee.png|50px|link=Cobalt Bee]]<br>[[Cobalt Bee]] || Event
+| Blue || 35 || 18.2 || 6
+| 10 Pollen || 4 s || {{Cost|Honey|120}} || 3 s
+| -
+| +15% Instant Blue Conversion
+| <li>[[File:Blue Pulse Token.png|30px|link=Blue Pulse]] [[Blue Pulse]]</li> <li>[[File:Blue Bomb Sync Token.png|30px|link=Blue Bomb Sync]] [[Blue Bomb Sync]]</li>
+| -
+| <li>Pine Tree Forest</li> <li>Clover Field</li> || <li>Pineapple Patch</li>
+|-
+| data-sort-value=6.03|[[File:Crimson Bee.png|50px|link=Crimson Bee]]<br>[[Crimson Bee]] || Event
+| Red || 35 || 18.2 || 6
+| 10 Pollen || 4 s || {{Cost|Honey|120}} || 3 s
+| -
+| +15% Instant Red Conversion
+| <li>[[File:Red Pulse Token.png|30px|link=Red Pulse]] [[Red Pulse]]</li> <li>[[File:Red Bomb Sync Token.png|30px|link=Red Bomb Sync]] [[Red Bomb Sync]]</li>
+| -
+| <li>Rose Field</li> <li>Clover Field</li> || <li>Pineapple Patch</li>
+|-
+| data-sort-value=6.04|[[File:Digital Bee.png|50px|link=Digital Bee]]<br>[[Digital Bee]] || Event
+| Colorless || 20 || 11.9 || 1
+| 10 Pollen || 4 s || {{Cost|Honey|80}} || 4 s
+| -
+| +1% Ability Duplication Chance
+| <li>[[File:Glitch Token.png|30px|link=Ability Tokens#Glitch Token]] [[Ability Tokens#Glitch|Glitch]]</li> <li>[[File:Mind Hack Token.png|30px|link=Ability Tokens#Mind Hack]] [[Ability Tokens#Mind Hack|Mind Hack]]</li> <li>[[File:Map Corruption Token.png|30px|link=Ability Tokens#Map Corruption]] [[Ability Tokens#Map Corruption|Map Corruption]] (Gifted)</li>
+| [[Passive Abilities#Drive Expansion|Drive Expansion]]
+| <li>Coconut Field</li> <li>Mountain Top Field</li> <li>Dandelion Field</li> || <li>Pine Tree Forest</li>
+|-
+| data-sort-value=6.05|[[File:Festive Bee.png|50px|link=Festive Bee]]<br>[[Festive Bee]] || Event
+| Red || 20 || 16.1 || 1
+| 40 Pollen || 4 s || {{Cost|Honey|150}} || 1 s
+| -
+| x1.25 Convert Rate at Hive
+| <li>[[File:Honey Mark Token.png|30px|link=Ability Tokens#Mark]] [[Ability Tokens#Mark|Honey Mark]]</li> <li>[[File:Red Bomb+ Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Red Bomb+]]</li> <li>[[File:Festive Gift Token.png|30px|link=Ability Tokens#Festive Gift|Festive Gift]] [[Ability Tokens#Festive Gift|Festive Gift]]</li> <li>[[File:Festive Mark Token.png|30px|link=Ability Tokens#Festive Mark|Festive Mark]] [[Ability Tokens#Festive Mark|Festive Mark]] (Festive Wreath)</li>
+| -
+| <li>Pine Tree Forest</li> <li>Mountain Top Field</li> <li>Mushroom Field</li> || <li>Blue Flower Field</li>
+|-
+| data-sort-value=6.06|[[File:Gummy Bee.png|50px|link=Gummy Bee]]<br>[[Gummy Bee]] || Event
+| Colorless || 50 || 14 || 3
+| 10 Pollen || 4s || {{Cost|Honey|700}} || 4s
+| -
+| +5% Honey Per Pollen
+| <li>[[File:Glob Token.png|30px|link=Ability Tokens#Glob]] [[Glob]]</li> <li>[[File:Gumdrop Barrage Token.png|30px|link=Ability Tokens#Gumdrop Barrage]] [[Gumdrop Barrage]]</li>
+| -
+| <li>Mountain Top Field</li> <li>Pineapple Patch</li> <li>Stump Field</li> || <li>Pumpkin Patch</li>
+|-
+| data-sort-value=6.07|[[File:Photon Bee.png|50px|link=Photon Bee]]<br>[[Photon Bee]] || Event
+| Colorless || data-sort-value=250 | Unlimited || 21 || 3
+| 20 Pollen || 2 s || {{Cost|Honey|240}} || 2 s
+| -
+| +5% Instant Conversion
+| <li>[[File:Haste Token.png|30px|link=Haste]] [[Haste]]</li> <li>[[File:Beamstorm Token.png|30px|link=Beamstorm]] [[Beamstorm]]</li>
+| -
+| <li>Pumpkin Patch</li> <li>Pineapple Patch</li> || <li>Clover Field</li>
+|-
+| data-sort-value=6.08|[[File:Puppy Bee.png|50px|link=Puppy Bee]]<br>[[Puppy Bee]] || Event
+| Colorless || 40 || 16.1 || 2
+| 25 Pollen || 4 s || {{Cost|Honey|280}} || 4 s
+| -
+| +20% Bond From Treats
+| <li>[[File:Puppy Love Token.png|30px|link=Ability Tokens#Puppy Love|Puppy Love]] [[Ability Tokens#Puppy Love|Puppy Love]]</li> <li>[[File:Fetch Token.png|30px|link=Ability Tokens#Fetch|Fetch]] [[Ability Tokens#Fetch|Fetch]] / [[Ability Tokens#Fetch|Reindeer Fetch]] (Reindeer Antlers)</li> <li>[[File:Focus Token.png|30px|link=Focus]] [[Focus]] (Reindeer Antlers)</li> 
+| -
+| <li>Clover Field</li> <li>Pumpkin Field</li> || <li>Rose Field</li>
+|-
+| data-sort-value=6.09|[[File:Tabby Bee.png|50px|link=Tabby Bee]]<br>[[Tabby Bee]] || Event
+| Colorless || 28 || 16.1 || 4
+| data-sort-value=110 Pollen | 10 - 110 Pollen || 4 s || data-sort-value=1760 Honey | 160 - {{Cost|Honey|1760}} || 3 s
+| -
+| +50% Critical Power
+| <li>[[File:Scratch Token.png|30px|link=Scratch]] [[Scratch]]</li> <li>[[File:Tabby Love Token.png|30px|link=Tabby Love]] [[Tabby Love]]</li>
+| -
+| <li>Clover Field</li> <li>Spider Field</li> || <li>Cactus Field</li>
+|-
+| data-sort-value=6.10|[[File:Vicious Bee.png|50px|link=Vicious Bee]]<br>[[Vicious Bee]] || Event
+| Blue || 50 || 17.5 || 8
+| 10 Pollen || 4 s || {{Cost|Honey|80}} || 4 s
+| -
+| -15% Monster Respawn Time
+| <li>[[File:Blue Bomb+ Token.png|30px|link=Ability Tokens#Bomb]] [[Ability Tokens#Bomb|Blue Bomb+]]</li> <li>[[File:Impale Token.png|30px|link=Ability Tokens#Impale|Impale]] [[Ability Tokens#Impale|Impale]]</li>
+| -
+| <li>Rose Field</li> <li>Cactus Field</li> || <li>Dandelion Field</li>
+|-
+| data-sort-value=6.11|[[File:Windy Bee.png|50px|link=Windy Bee]]<br>[[Windy Bee]] || Event
+| Colorless || 20 || 19.6 || 3
+| 10 Pollen || 3 s || {{Cost|Honey|180}} || 2 s
+| -
+| +15% Instant White Conversion, x2 Boosts From Clouds
+| <li>[[File:White Boost Token.png|30px|link=Ability Tokens#Boost]] [[Ability Tokens#Boost|White Boost]]</li> <li>[[File:Rain Cloud Token.png|30px|link=Ability Tokens#Rain Cloud|Rain Cloud]] [[Ability Tokens#Rain Cloud|Rain Cloud]]</li> <li>[[File:Tornado Token.png|30px|link=Ability Tokens#Tornado|Tornado]] [[Ability Tokens#Tornado|Tornado]]</li>
+| -
+| <li>Coconut Field</li> <li>Dandelion Field</li> || <li>Strawberry Field</li> <li>Bamboo Field</li>
+|}
+<noinclude>[[Category:Templates]]
+[[Category:Templates_used_on_any_main_page]]</noinclude>
