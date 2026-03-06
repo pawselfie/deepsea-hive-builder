@@ -377,6 +377,7 @@ footer a:hover {
     width: 24px;
     height: 24px;
     object-fit: contain;
+    border-radius: 6px;
 }
 
 #modal-overlay {
