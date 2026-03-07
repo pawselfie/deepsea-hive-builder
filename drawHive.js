@@ -1,4 +1,4 @@
-function drawHive(x, y, radius, slots, level, mutation, beequip, partialBee, partialBeequip, partialLevel, partialMutation) {
+function drawHive(x, y, radius, slots, level, mutation, beequip, partialBee, partialBeequip, partialLevel, partialMutation, beequipTokens, partialBeequipTokens) {
     hexes = [];
     const mutations = {
         NONE: color(255, 254, 254),
@@ -226,6 +226,7 @@ function drawHive(x, y, radius, slots, level, mutation, beequip, partialBee, par
                 }
             } catch (error) {
             }
+
         }
 
         // PARTIAL BEE on empty slot (no gifted/beequip to worry about here)
@@ -287,6 +288,36 @@ function drawHive(x, y, radius, slots, level, mutation, beequip, partialBee, par
             } catch (error) {}
         }
 
+        // BEEQUIP TOKEN ICONS — only selected optional tokens (not guaranteed)
+        try {
+            const cx = hexes[hexes.length - 1].x;
+            const cy = hexes[hexes.length - 1].y;
+            const tokSize = 13;
+            const hasPartialBeeSlot = partialBee && partialBee[i] != null;
+
+            // Regular beequip: only selected optional tokens
+            const selToks = (beequipTokens && beequipTokens[i]) ? beequipTokens[i] : [];
+            const activeToks = selToks.filter(t => token_imgs[t]);
+            if (activeToks.length > 0) {
+                imageMode(CENTER);
+                noTint();
+                const tx = hasPartialBeeSlot ? cx - radius * 0.35 : cx + radius * 0.38;
+                for (let ti = 0; ti < activeToks.length; ti++) {
+                    image(token_imgs[activeToks[ti]], tx, cy + radius * 0.35 - ti * (tokSize + 1), tokSize, tokSize);
+                }
+            }
+            // Partial beequip: only selected optional tokens
+            const pSelToks = (partialBeequipTokens && partialBeequipTokens[i] && hasPartialBeeSlot) ? partialBeequipTokens[i] : [];
+            const pActiveToks = pSelToks.filter(t => token_imgs[t]);
+            if (pActiveToks.length > 0) {
+                imageMode(CENTER);
+                noTint();
+                for (let ti = 0; ti < pActiveToks.length; ti++) {
+                    image(token_imgs[pActiveToks[ti]], cx + radius * 0.35, cy + radius * 0.35 - ti * (tokSize + 1), tokSize, tokSize);
+                }
+            }
+        } catch(e) {}
+
         // PARTIAL LEVEL
         if (!hideLevels && partialBee && partialBee[i] != null) try {
             const pLvl = partialLevel?.[i];
@@ -310,6 +341,34 @@ function drawHive(x, y, radius, slots, level, mutation, beequip, partialBee, par
                 }
             }
         } catch(error) {}
+
+        // DRIVE - render on any slot where DIG is the regular or partial bee
+        if (selected_drive && drive_imgs[selected_drive]) {
+            const isRegularDIG = bee === 'DIG';
+            const isPartialDIG = partialBee && partialBee[i]?.toUpperCase() === 'DIG';
+            if (isRegularDIG || isPartialDIG) {
+                const cx = hexes[hexes.length - 1].x;
+                const cy = hexes[hexes.length - 1].y;
+                const hasPartialBee = partialBee && partialBee[i] != null;
+                const driveSize = radius - 45;
+                let driveX, driveY;
+                if (!hasPartialBee) {
+                    driveX = cx + radius * 0.45;
+                    driveY = cy - radius * 0.5;
+                } else if (isPartialDIG) {
+                    // DIG is the partial bee (right half)
+                    driveX = cx + radius * 0.45;
+                    driveY = cy - radius * 0.5;
+                } else {
+                    // DIG is the regular bee (left half)
+                    driveX = cx - radius * 0.45;
+                    driveY = cy - radius * 0.5;
+                }
+                imageMode(CENTER);
+                noTint();
+                image(drive_imgs[selected_drive], driveX, driveY, driveSize, driveSize);
+            }
+        }
 
         if (selected.length === 0) {
             hexesNormal = hexes.map(h => ({...h}));

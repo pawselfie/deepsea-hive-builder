@@ -73,11 +73,19 @@
             </div>
         </div>
     </div>
+    <div id="bqp-picker-overlay">
+        <div id="bqp-picker-box">
+            <div id="bqp-picker-title"></div>
+            <div id="bqp-picker-options"></div>
+            <button id="bqp-picker-cancel">Cancel</button>
+        </div>
+    </div>
     <footer>
         <a href="https://discord.gg/QWeGutM76U" target="_blank">
             <img src="assets/atn.webp" id="atn_icon"/>
             Join Abyssal Trench Network for more BSS tools!
         </a>
+        <div id="multSeltCon" data-status="inactive"></div>
     </footer>
     <div id="menu" data-status="active">
         <div class="canvasContainer"></div>
@@ -350,7 +358,6 @@
             </div>
             <!-- Column 3: General + Mutations -->
             <div class="bee-col">
-            <div id="multSeltCon"></div>
             <div id="general">
                 <div class="beeHead">
                     <p class="beeTitle">General</p>
@@ -423,6 +430,28 @@
                     <button id="btn-IC">Instant Conversion</button>
                 </div>
             </div>
+            <div id="drives">
+                <div class="beeHead">
+                    <p class="beeTitle">Drives</p>
+                    <button id="drivesMax" class="minMax" data-status="inactive">
+                        <span class="material-symbols-outlined">
+                        add
+                        </span>
+                    </button>
+                    <button id="drivesMin" class="minMax" data-status="active">
+                        <span class="material-symbols-outlined">
+                        remove
+                        </span>
+                    </button>
+                </div>
+                <div id="bees-drives" class="bee-section" data-status="active">
+                    <button id="btn-DRV-RED"><img src="assets/drives/Red.webp" alt="Red Drive"><span>Red Drive</span></button>
+                    <button id="btn-DRV-WHITE"><img src="assets/drives/White.webp" alt="White Drive"><span>White Drive</span></button>
+                    <button id="btn-DRV-BLUE"><img src="assets/drives/Blue.webp" alt="Blue Drive"><span>Blue Drive</span></button>
+                    <button id="btn-DRV-GLITCH"><img src="assets/drives/Glitched.webp" alt="Glitched Drive"><span>Glitched Drive</span></button>
+                    <button id="btn-DRV-NONE">Remove Drive</button>
+                </div>
+            </div>
             </div>
         </div>
         <div class="toolPanel">
@@ -453,6 +482,15 @@
                 <button class="preset-tab" data-group="custom">Custom</button>
             </div>
             <div id="preset-list"></div>
+        </div>
+        <div id="token-sources-panel">
+            <div id="token-sources-content">
+                <div class="ts-header">Token Sources</div>
+                <div id="token-sources-list"></div>
+            </div>
+            <button id="token-sources-tab" title="Token Sources">
+                <span class="ts-tab-label">Sources</span>
+            </button>
         </div>
     </div>
 </body>

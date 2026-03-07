@@ -4,7 +4,8 @@ HTMLCanvasElement.prototype.getContext = function(type, attrs) {
     return _origGetContext.call(this, type, attrs);
 };
 
-let mode, cnv, fnt, hive, hiveSaved, hexes, hexesNormal, selected, multSelt, gifted, bee_btns, bqp_btns, mut_btns, dragging=false;
+let mode, cnv, fnt, hwfnt, hive, hiveSaved, hexes, hexesNormal, selected, multSelt, gifted, bee_btns, bqp_btns, mut_btns, dragging=false;
+const token_imgs = {};
 let undoStack = [];
 let redoStack = [];
 let slotClipboard = null;
@@ -108,19 +109,199 @@ const BQP_INFO = {
     WA:   { name:'Warm Scarf',          section:'beesmas',  level:5,  color:'Any',  limit:3, beeReq:['Basic','Rad','Exhausted','Frosty','Shy'],                            otherReq:[] },
     PE:   { name:'Peppermint Antennas', section:'beesmas',  level:7,  color:'Any',  limit:3, beeReq:[],                                                                    otherReq:[] },
     // Unreleased beequips
-    SPS:  { name:'Six-Point Shuriken',    section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    PL:   { name:'Pan Lid',               section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    PB:   { name:'Pink Bow',              section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    OFF:  { name:'Orange Flip Flop',      section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    HH:   { name:'Heroic Helm',           section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    FGS:  { name:'Fidget Spinner',        section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    SC:   { name:'Safety Cone',           section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    CB:   { name:'Charity Bracelet',      section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    RS:   { name:'Round Spectacles',      section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    SH:   { name:'Shell Necklace',        section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    BKM:  { name:"Beekeeper's Medal",     section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
-    MFP:  { name:'Monster Finger Puppet', section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[] },
+    SPS:  { name:'Six-Point Shuriken',    section:'unreleased', level:16, color:'Blue', limit:1, beeReq:['Gifted Ninja'],                                                otherReq:['Bee must have a mutation'] },
+    PL:   { name:'Pan Lid',               section:'unreleased', level:9,  color:'Any',  limit:1, beeReq:['Brave','Fire','Bubble','Music','Lion','Cobalt'],               otherReq:[] },
+    PB:   { name:'Pink Bow',              section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[], noData:true },
+    OFF:  { name:'Orange Flip Flop',      section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[], noData:true },
+    HH:   { name:'Heroic Helm',           section:'unreleased', level:15, color:'Any',  limit:1, beeReq:['Gifted Brave'],                                                otherReq:['Bee must have a mutation'] },
+    FGS:  { name:'Fidget Spinner',        section:'unreleased', level:12, color:'Any',  limit:1, beeReq:[],                                                              otherReq:['Bee must be Common or Rare'] },
+    SC:   { name:'Safety Cone',           section:'unreleased', level:8,  color:'Any',  limit:1, beeReq:[],                                                              otherReq:['Bee must be Epic'] },
+    CB:   { name:'Charity Bracelet',      section:'unreleased', level:10, color:'Any',  limit:1, beeReq:['Basic','Hasty','Cool','Bucko','Riley','Festive'],               otherReq:[] },
+    RS:   { name:'Round Spectacles',      section:'unreleased', level:null, color:null, limit:null, beeReq:[], otherReq:[], noData:true },
+    SH:   { name:'Shell Necklace',        section:'unreleased', level:18, color:'Any',  limit:1, beeReq:['Basic','Rad','Exhausted','Music','Cobalt'],                    otherReq:[] },
+    BKM:  { name:"Beekeeper's Medal",     section:'unreleased', level:20, color:'Any',  limit:1, beeReq:[],                                                              otherReq:['Bee must be Gifted and be Common, Rare or Epic'] },
+    MFP:  { name:'Monster Finger Puppet', section:'unreleased', level:12, color:'Any',  limit:1, beeReq:['Rascal','Fire','Shocked','Gummy','Vicious'],                   otherReq:['Bee must have a mutation'] },
 };
+
+// Beequip ability tokens guaranteed at 100% base chance (from beequips.lua)
+const BEEQUIP_ABILITY_GUARANTEED = {
+    RE:   ['Focus'],            // Reindeer Antlers
+    TOY:  ['Haste'],            // Toy Drum
+    PAP:  ['Token Link'],       // Paper Angel
+    WH:   ['Haste'],            // Whistle
+    FES:  ['Festive Mark'],     // Festive Wreath
+    SNO:  ['Snowglobe Shake'],  // Snowglobe
+    KA:   ['Melody'],           // Kazoo
+    TO:   ['Melody'],           // Toy Horn
+};
+
+// Optional ability tokens: non-guaranteed, player selects which to count.
+// Flat form:  { tokens, exclusive }  — exclusive true = radio (pick one), false = any subset
+// Group form: { groups: [{ tokens, exclusive }, ...] } — one selection per group + Confirm
+const BEEQUIP_ABILITY_OPTIONAL = {
+    RE:   { tokens: ['Baby Love'],               exclusive: false }, // Reindeer Antlers
+    SM:   { tokens: ['Honey Mark', 'Blue Bomb'], exclusive: false }, // Smiley Sticker
+    BOT:  { tokens: ['Buzz Bomb'],               exclusive: false }, // Bottle Cap
+    PA:   { tokens: ['Token Link'],              exclusive: false }, // Paperclip
+    WH:   { tokens: ['Melody'],                  exclusive: false }, // Whistle
+    LE:   { tokens: ['Red Boost', 'Blue Boost'], exclusive: true  }, // Lei
+    CH:   { tokens: ['Melody'],                  exclusive: false }, // Charm Bracelet
+    PI:   { tokens: ['Focus'],                   exclusive: false }, // Pink Shades
+    BEAD: { tokens: ['Token Link'],              exclusive: false }, // Bead Lizard
+    BER:  { tokens: ['Blue Boost'],              exclusive: false }, // Beret
+    DEMO: { tokens: ['Inferno'],                 exclusive: false }, // Demon Talisman
+    // Bang Snap: one bomb token (exclusive) + one bomb+ token (exclusive), both optional
+    BANG: { groups: [
+        { label: 'Bomb',  tokens: ['Red Bomb',  'Blue Bomb',  'Buzz Bomb' ], exclusive: true },
+        { label: 'Bomb+', tokens: ['Red Bomb+', 'Blue Bomb+', 'Buzz Bomb+'], exclusive: true },
+    ]},
+};
+
+// Token image asset paths
+const TOKEN_ASSETS = {
+    'Baby Love':  'assets/tokens/BabyLove.webp',
+    'Blue Bomb':  'assets/tokens/BlueBomb.webp',
+    'Blue Bomb+': 'assets/tokens/BlueBombPlus.webp',
+    'Blue Boost': 'assets/tokens/BlueBoost.webp',
+    'Buzz Bomb':  'assets/tokens/BuzzBomb.webp',
+    'Buzz Bomb+': 'assets/tokens/BuzzBombPlus.webp',
+    'Focus':      'assets/tokens/Focus.webp',
+    'Honey Mark': 'assets/tokens/HoneyMark.webp',
+    'Inferno':    'assets/tokens/Inferno.webp',
+    'Melody':     'assets/tokens/Melody.webp',
+    'Red Bomb':   'assets/tokens/RedBomb.webp',
+    'Red Bomb+':  'assets/tokens/RedBombPlus.webp',
+    'Red Boost':  'assets/tokens/RedBoost.webp',
+    'Token Link': 'assets/tokens/TokenLink.webp',
+};
+
+// Returns all active ability tokens for a beequip slot.
+// selectedOptional: array of selected optional token names (or null = none selected).
+function getBeequipAbilTokens(bqpCode, selectedOptional) {
+    if (!bqpCode) return [];
+    const guaranteed = BEEQUIP_ABILITY_GUARANTEED[bqpCode] || [];
+    const optional = selectedOptional || [];
+    return [...guaranteed, ...optional];
+}
+
+// Normalize a token name: strip (G)/(FW)/etc. suffixes, strip trailing +, lowercase
+function normalizeToken(t) {
+    t = t.replace(/\s*\([^)]*\)\s*$/, '').trim(); // remove parenthetical suffixes
+    t = t.replace(/\+$/, '');                       // remove trailing +
+    return t.trim().toLowerCase();
+}
+
+// Some beequips transform an existing bee token rather than add a new one.
+// Returns a copy of normToks with any applicable transformations applied.
+function applyBeequipTransforms(normToks, bqpCode) {
+    if (bqpCode === 'RE' && normToks.includes('fetch')) {
+        return normToks.map(t => t === 'fetch' ? 'reindeer fetch' : t);
+    }
+    return normToks;
+}
+
+function computeTokenSources() {
+    // Returns { full: {normToken: count}, partial: {normToken: count} }
+    // full  = committed sources (no partial conflict)
+    // partial = sources that are "in transition" (partial bee/beequip differs)
+    const full = {};
+    const partial = {};
+
+    function addFull(norm)    { full[norm]    = (full[norm]    || 0) + 1; }
+    function addPartial(norm) { partial[norm] = (partial[norm] || 0) + 1; }
+
+    const n = hive.slots ? hive.slots.length : 0;
+    for (let i = 0; i < n; i++) {
+        const beeCode     = (hive.slots[i] || '').toUpperCase();
+        const bqpCode     = hive.beequip      ? (hive.beequip[i]      || null) : null;
+        const partBeeCode = (hive.partialBee  ? (hive.partialBee[i]   || '') : '').toUpperCase();
+        const partBqpCode = hive.partialBeequip ? (hive.partialBeequip[i] || null) : null;
+
+        const beeInfo          = BEE_INFO[beeCode];
+        const beeNormToks      = applyBeequipTransforms(
+            beeInfo    ? [...new Set(beeInfo.tokens.map(normalizeToken))]    : [], bqpCode);
+
+        const partBeeInfo      = partBeeCode ? BEE_INFO[partBeeCode] : null;
+        const partBeeNormToks  = applyBeequipTransforms(
+            partBeeInfo ? [...new Set(partBeeInfo.tokens.map(normalizeToken))] : [], partBqpCode);
+
+        const bqpNormAbils     = bqpCode     ? [...new Set(getBeequipAbilTokens(bqpCode,     hive.beequipTokens      ? hive.beequipTokens[i]      : null).map(normalizeToken))] : [];
+        const partBqpNormAbils = partBqpCode ? [...new Set(getBeequipAbilTokens(partBqpCode, hive.partialBeequipTokens ? hive.partialBeequipTokens[i] : null).map(normalizeToken))] : [];
+
+        // --- Bee tokens ---
+        if (partBeeCode && partBeeInfo) {
+            // Per-token: if partial bee also gives same grouped token → committed; otherwise → partial
+            for (const norm of beeNormToks) {
+                if (partBeeNormToks.includes(norm)) addFull(norm);
+                else                                addPartial(norm);
+            }
+            // Tokens only the partial bee provides
+            for (const norm of partBeeNormToks) {
+                if (!beeNormToks.includes(norm)) addPartial(norm);
+            }
+        } else {
+            for (const norm of beeNormToks) addFull(norm);
+        }
+
+        // --- Beequip ability tokens ---
+        // If a beequip ability normalizes to the same token as the bee in this slot,
+        // it's an upgrade (e.g. Reindeer Fetch upgrades Fetch) — not an extra source.
+        const bqpFiltered     = bqpNormAbils.filter(a => !beeNormToks.includes(a));
+        const partBqpFiltered = partBqpNormAbils.filter(a => !partBeeNormToks.includes(a));
+
+        if (partBqpCode) {
+            for (const norm of bqpFiltered) {
+                if (partBqpFiltered.includes(norm)) addFull(norm);
+                else                                addPartial(norm);
+            }
+            for (const norm of partBqpFiltered) {
+                if (!bqpFiltered.includes(norm)) addPartial(norm);
+            }
+        } else {
+            for (const norm of bqpFiltered) addFull(norm);
+        }
+    }
+    return { full, partial };
+}
+
+let _tokenPanelInterval = null;
+
+function updateTokenSourcesPanel() {
+    const list = document.getElementById('token-sources-list');
+    if (!list) return;
+    const { full, partial } = computeTokenSources();
+    const allTokens = new Set([...Object.keys(full), ...Object.keys(partial)]);
+    if (allTokens.size === 0) {
+        list.innerHTML = '<span class="ts-empty">No tokens</span>';
+        return;
+    }
+    const TOKEN_PRIORITY = [
+        'baby love', 'token link', 'melody', 'haste',
+        'honey mark', 'red boost', 'blue boost', 'white boost', 'inflate balloon',
+    ];
+    const sorted = [...allTokens].sort((a, b) => {
+        const pa = TOKEN_PRIORITY.indexOf(a);
+        const pb = TOKEN_PRIORITY.indexOf(b);
+        if (pa !== -1 || pb !== -1) {
+            if (pa === -1) return 1;
+            if (pb === -1) return -1;
+            return pa - pb;
+        }
+        const ta = (full[a] || 0) + (partial[a] || 0);
+        const tb = (full[b] || 0) + (partial[b] || 0);
+        return tb - ta || a.localeCompare(b);
+    });
+    let html = '';
+    for (const tok of sorted) {
+        const f = full[tok] || 0;
+        const p = partial[tok] || 0;
+        const countStr = p > 0
+            ? `<span class="ts-count ts-partial">${f}/${f + p}</span>`
+            : `<span class="ts-count ts-full">${f}</span>`;
+        html += `<div class="ts-row">${countStr}<span class="ts-name">${tok}</span></div>`;
+    }
+    list.innerHTML = html;
+}
 
 // Basic Bee stat baseline for comparison coloring
 const BASIC_STATS = { energy: 20, speed: 14, attack: 1, gatherAmt: 10, gatherSpd: 4, convertAmt: 80, convertSpd: 4 };
@@ -163,15 +344,16 @@ function buildTooltipHTML(info) {
 function buildBqpTooltipHTML(info) {
     const icon = info.section === 'beesmas' ? '🎄' : info.section === 'unreleased' ? '⚠️' : '📌';
     let h = `<div class="tt-name">${icon} ${info.name}</div>`;
-    if (info.section === 'unreleased') {
-        h += `<div class="tt-row"><span class="tt-lbl">Status</span><span>Unreleased</span></div>`;
+    if (info.section === 'unreleased' && info.noData) {
+        h += `<div class="tt-row"><span class="tt-lbl">Status</span><span>No data</span></div>`;
         return h;
     }
     h += `<div class="tt-row"><span class="tt-lbl">Limit</span><span>${info.limit}</span></div>`;
     h += `<div class="tt-row"><span class="tt-lbl">Level</span><span>${info.level}</span></div>`;
     h += `<div class="tt-row"><span class="tt-lbl">Color</span><span>${info.color}</span></div>`;
-    if (info.beeReq.length)   h += `<div class="tt-row"><span class="tt-lbl">Bee Req</span><span>${info.beeReq.join(', ')}</span></div>`;
-    if (info.otherReq.length) h += `<div class="tt-row"><span class="tt-lbl">Other Req</span><span>${info.otherReq.join(', ')}</span></div>`;
+    if (info.beeReq.length)        h += `<div class="tt-row"><span class="tt-lbl">Bee Req</span><span>${info.beeReq.join(', ')}</span></div>`;
+    if (info.otherReq.length)      h += `<div class="tt-row"><span class="tt-lbl">Other Req</span><span>${info.otherReq.join(', ')}</span></div>`;
+    if (!info.beeReq.length && !info.otherReq.length) h += `<div class="tt-row"><span class="tt-lbl">Req</span><span>None</span></div>`;
     return h;
 }
 
@@ -220,7 +402,7 @@ const PRESETS = {
         { name: 'Pop Gummy Comp',     data: '{"name":"Pop Gummy Comp","slots":["be","ph","gu","wi","tab","pu","st","dig","lo","cob","ha","ho","ba","sh","co","buc","ca","li","mu","bub","ni","ve","ve","ve","di","ve","ve","ve","ve","ve","ve","ta","ta","ta","ve","ta","ta","ta","ta","ta","pr","pr","ta","pr","pr","pr","pr","buo","pr","pr"],"level":[22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],"mutation":["BAR","BMS","BMS","BMS","BAR","BMS","BMS","GA","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS"],"beequip":[null,"PAP",null,null,null,null,"SM","SW","PA","TO","PA",null,"PI",null,"WH","TOY","SM","TO",null,"CAMP",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"KA",null,null]}' },
     ],
     white: [
-        { name: 'White Hive',         data: '{"name":"White Hive","slots":["wi","be","dig","tab","gu","pu","lo","ba","st","ph","com","ha","bo","br","de","ho","bab","mu","bab","sh","bab","pr","ca","pr","bab","pr","pr","li","pr","pr","ve","ve","pr","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve"],"level":[22,22,23,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],"mutation":["BMS","BAR","GA","BAR","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS"],"beequip":[null,null,"SW",null,null,"RE","PA","PI","SM","PAP","WH","BEAD","PAP","TOY","TOY","PA",null,null,null,"KA",null,null,"SM",null,null,null,null,"TO",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]}' },
+        { name: 'White Hive',         data: '{"name":"White Hive","slots":["wi","be","dig","tab","gu","pu","lo","ba","st","ph","com","ha","bo","br","de","ho","bab","mu","bab","sh","bab","pr","ca","pr","bab","pr","pr","li","pr","pr","ve","ve","pr","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve","ve"],"level":[22,22,23,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22],"mutation":["BMS","BAR","GA","BAR","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS"],"beequip":[null,null,"SW",null,null,"RE","PA","PI","SM","PAP","WH","BEAD","PAP","TOY","TOY","PA",null,null,null,"KA",null,null,"SM",null,null,null,null,"TO",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"partialBee":[null,null,null,null,null,null,null,null,null,null,null,null,"shy",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"bab",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"partialBeequip":[null,null,null,null,null,null,null,null,null,null,null,null,"PAP",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"partialLevel":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"partialMutation":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"drive":"White"}' },
     ],
     red: [
         { name: 'Red Hive',           data: '{"name":"Red Hive","slots":["st","ri","ba","ri","ra","ta","bab","com","bab","ta","ve","ve","ca","ve","ve","ve","ve","ve","ve","ve","ve","pr","buo","sp","ve","pr","pr","dig","sp","sp","pr","pr","be","sp","sp","pr","pr","tab","sp","sp","pr","pr","cr","sp","sp","pr","pr","ph","sp","sp"],"level":[21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,22,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21],"mutation":["BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BMS","BAR","BMS","BMS","BMS","GA","BAR","BAR","BMS","BMS","BAR","BAR","BAR","BMS","BMS","BAR","BAR","BAR","BMS","BMS","BMS","BAR","BAR","BMS","BMS","BMS","BAR","BAR"],"beequip":["CAMP","TOY","PI","TOY",null,null,null,"WH",null,"PO",null,null,"CH",null,null,null,null,null,null,null,null,null,"KA","SM",null,null,null,"SW",null,"SM",null,null,null,null,null,null,null,null,null,null,null,null,"TO",null,null,null,null,"PAP",null,null]}' },
@@ -250,16 +432,25 @@ const PRESETS = {
     for (const group of Object.values(PRESETS)) {
         for (const p of group) {
             const parsed = p.data ? JSON.parse(p.data) : {};
-            p.slots    = parsed.slots    || new Array(50).fill('U');
-            p.level    = parsed.level    || new Array(50).fill(0);
-            p.mutation = parsed.mutation || new Array(50).fill(null);
-            p.beequip  = parsed.beequip  || new Array(50).fill(null);
+            p.slots                = parsed.slots                || new Array(50).fill('U');
+            p.level                = parsed.level                || new Array(50).fill(0);
+            p.mutation             = parsed.mutation             || new Array(50).fill(null);
+            p.beequip              = parsed.beequip              || new Array(50).fill(null);
+            p.beequipTokens        = parsed.beequipTokens        || new Array(50).fill(null);
+            p.partialBee           = parsed.partialBee           || new Array(50).fill(null);
+            p.partialBeequip       = parsed.partialBeequip       || new Array(50).fill(null);
+            p.partialBeequipTokens = parsed.partialBeequipTokens || new Array(50).fill(null);
+            p.partialLevel         = parsed.partialLevel         || new Array(50).fill(null);
+            p.partialMutation      = parsed.partialMutation      || new Array(50).fill(null);
+            p.drive                = parsed.drive                || null;
         }
     }
 })();
 let lastCtrlQTime = 0;
 const bee_imgs = {};
 const bqp_imgs = {};
+const drive_imgs = {};
+let selected_drive = null;
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 
@@ -387,6 +578,15 @@ function preload() {
     bqp_imgs['bqp_SH'] = loadImage('assets/bqps/bqp_SH.png');
     bqp_imgs['bqp_BKM'] = loadImage('assets/bqps/bqp_BKM.png');
     bqp_imgs['bqp_MFP'] = loadImage('assets/bqps/bqp_MFP.png');
+
+    drive_imgs['Red']     = loadImage('assets/drives/Red.webp');
+    drive_imgs['White']   = loadImage('assets/drives/White.webp');
+    drive_imgs['Blue']    = loadImage('assets/drives/Blue.webp');
+    drive_imgs['Glitched']= loadImage('assets/drives/Glitched.webp');
+
+    for (const [name, path] of Object.entries(TOKEN_ASSETS)) {
+        token_imgs[name] = loadImage(path);
+    }
 }
 
 function setup() {
@@ -401,8 +601,10 @@ function setup() {
         level: [],
         mutation: [],
         beequip: [],
+        beequipTokens: [],
         partialBee: [],
         partialBeequip: [],
+        partialBeequipTokens: [],
         partialLevel: [],
         partialMutation: []
     };
@@ -483,10 +685,13 @@ function setup() {
         hive.level        = hive.level        || new Array(hive.slots.length).fill(0);
         hive.mutation     = hive.mutation     || new Array(hive.slots.length).fill(null);
         hive.beequip      = hive.beequip      || new Array(hive.slots.length).fill(null);
-        hive.partialBee      = hive.partialBee      || new Array(hive.slots.length).fill(null);
-        hive.partialBeequip  = hive.partialBeequip  || new Array(hive.slots.length).fill(null);
-        hive.partialLevel    = hive.partialLevel    || new Array(hive.slots.length).fill(null);
-        hive.partialMutation = hive.partialMutation || new Array(hive.slots.length).fill(null);
+        hive.beequipTokens        = hive.beequipTokens        || new Array(hive.slots.length).fill(null);
+        hive.partialBee           = hive.partialBee           || new Array(hive.slots.length).fill(null);
+        hive.partialBeequip       = hive.partialBeequip       || new Array(hive.slots.length).fill(null);
+        hive.partialBeequipTokens = hive.partialBeequipTokens || new Array(hive.slots.length).fill(null);
+        hive.partialLevel         = hive.partialLevel         || new Array(hive.slots.length).fill(null);
+        hive.partialMutation      = hive.partialMutation      || new Array(hive.slots.length).fill(null);
+        selected_drive = hive.drive || null;
         setMode('app', true);
     }
 
@@ -568,6 +773,33 @@ function setup() {
 
     document.getElementById('keybindsBtn').addEventListener('click', showKeybinds);
 
+    document.getElementById('token-sources-tab').addEventListener('click', () => {
+        const panel = document.getElementById('token-sources-panel');
+        const isOpen = panel.classList.contains('open');
+        if (isOpen) {
+            panel.classList.remove('open');
+            clearInterval(_tokenPanelInterval);
+            _tokenPanelInterval = null;
+        } else {
+            panel.classList.add('open');
+            updateTokenSourcesPanel();
+            _tokenPanelInterval = setInterval(updateTokenSourcesPanel, 500);
+        }
+    });
+
+    select('#drivesMax').mouseClicked(expandPanel.bind(null, 'drives'));
+    select('#drivesMin').mouseClicked(expandPanel.bind(null, 'drives', 'true'));
+
+    const driveKeys = ['RED', 'WHITE', 'BLUE', 'GLITCH', 'NONE'];
+    const driveNames = { RED: 'Red', WHITE: 'White', BLUE: 'Blue', GLITCH: 'Glitched', NONE: null };
+    for (const dk of driveKeys) {
+        const btn = document.getElementById(`btn-DRV-${dk}`);
+        if (!btn) continue;
+        btn.addEventListener('click', () => {
+            selected_drive = driveNames[dk];
+        });
+    }
+
     initPresetPanel();
 }
 
@@ -594,7 +826,7 @@ function draw() {
     // app
     if (mode == 'app') {
         select('#headerTitle').html(`&nbsp&nbspDeepsea Hive Builder - ${hive.name}`);
-        drawHive(width / 2 - 140, height-17.5, 30, hive.slots, hive.level, hive.mutation, hive.beequip, hive.partialBee, hive.partialBeequip, hive.partialLevel, hive.partialMutation);
+        drawHive(width / 2 - 140, height-17.5, 30, hive.slots, hive.level, hive.mutation, hive.beequip, hive.partialBee, hive.partialBeequip, hive.partialLevel, hive.partialMutation, hive.beequipTokens, hive.partialBeequipTokens);
         hexes = hexes.splice(0, hive.slots.length < 25 ? 25 : hive.slots.length);
         if (hive.slots.length >= 50 || selected.length != 0) {
             select('#addSlot').attribute('disabled', '');
@@ -680,10 +912,13 @@ Number.prototype.between = function(a, b, inclusive) {
 
 function loadHive() {
     hive = getItem('hive');
-    hive.partialBee      = hive.partialBee      || new Array(hive.slots.length).fill(null);
-    hive.partialBeequip  = hive.partialBeequip  || new Array(hive.slots.length).fill(null);
-    hive.partialLevel    = hive.partialLevel    || new Array(hive.slots.length).fill(null);
-    hive.partialMutation = hive.partialMutation || new Array(hive.slots.length).fill(null);
+    hive.beequipTokens        = hive.beequipTokens        || new Array(hive.slots.length).fill(null);
+    hive.partialBee           = hive.partialBee           || new Array(hive.slots.length).fill(null);
+    hive.partialBeequip       = hive.partialBeequip       || new Array(hive.slots.length).fill(null);
+    hive.partialBeequipTokens = hive.partialBeequipTokens || new Array(hive.slots.length).fill(null);
+    hive.partialLevel         = hive.partialLevel         || new Array(hive.slots.length).fill(null);
+    hive.partialMutation      = hive.partialMutation      || new Array(hive.slots.length).fill(null);
+    selected_drive = hive.drive || null;
     setMode('app', true);
 }
 
@@ -694,8 +929,10 @@ async function newHive() {
         level: [],
         mutation: [],
         beequip: [],
+        beequipTokens: [],
         partialBee: [],
         partialBeequip: [],
+        partialBeequipTokens: [],
         partialLevel: [],
         partialMutation: []
     };
@@ -724,6 +961,7 @@ async function setMode(m, loaded=false) {
         cnv.style('transform', 'translateX(-50%)');
         select('#menu').attribute('data-status', 'active');
         select('#app').attribute('data-status', 'inactive');
+        select('#multSeltCon').attribute('data-status', 'inactive');
     } else {
         if (!loaded) {
             let x = await showModal({ message: 'Enter hive name (max 15 chars): (this can be changed later)', type: 'prompt', defaultValue: 'hive' });
@@ -739,10 +977,12 @@ async function setMode(m, loaded=false) {
                 hive.level = new Array(slotCount).fill(0);
                 hive.mutation = new Array(slotCount).fill(null);
                 hive.beequip = new Array(slotCount).fill(null);
-                hive.partialBee      = new Array(slotCount).fill(null);
-                hive.partialBeequip  = new Array(slotCount).fill(null);
-                hive.partialLevel    = new Array(slotCount).fill(null);
-                hive.partialMutation = new Array(slotCount).fill(null);
+                hive.beequipTokens        = new Array(slotCount).fill(null);
+                hive.partialBee           = new Array(slotCount).fill(null);
+                hive.partialBeequip       = new Array(slotCount).fill(null);
+                hive.partialBeequipTokens = new Array(slotCount).fill(null);
+                hive.partialLevel         = new Array(slotCount).fill(null);
+                hive.partialMutation      = new Array(slotCount).fill(null);
             } else {
                 return;
             }
@@ -753,6 +993,7 @@ async function setMode(m, loaded=false) {
         resizeCanvas(472, 563);
         select('#menu').attribute('data-status', 'inactive');
         select('#app').attribute('data-status', 'active');
+        select('#multSeltCon').attribute('data-status', 'active');
         if (typeof updateParticles === 'function') updateParticles(hive);
     }
 }
@@ -770,8 +1011,10 @@ function addSlot() {
     hive.level.push(0);
     hive.mutation.push(null);
     hive.beequip.push(null);
+    hive.beequipTokens.push(null);
     hive.partialBee.push(null);
     hive.partialBeequip.push(null);
+    hive.partialBeequipTokens.push(null);
     hive.partialLevel.push(null);
     hive.partialMutation.push(null);
     if (typeof updateParticles === 'function') updateParticles(hive);
@@ -783,8 +1026,10 @@ function removeSlot() {
     hive.level.pop();
     hive.mutation.pop();
     hive.beequip.pop();
+    hive.beequipTokens.pop();
     hive.partialBee.pop();
     hive.partialBeequip.pop();
+    hive.partialBeequipTokens.pop();
     hive.partialLevel.pop();
     hive.partialMutation.pop();
     if (typeof updateParticles === 'function') updateParticles(hive);
@@ -812,21 +1057,24 @@ function flashStatusText(msg) {
 }
 
 function saveHive() {
-    storeItem('hive', hive);
+    storeItem('hive', { ...hive, drive: selected_drive });
     hiveSaved = true;
     const customs = getCustomPresets();
     const match = customs.findIndex(p => p.name === hive.name);
     if (match !== -1) {
         customs[match] = {
-            name:            hive.name,
-            slots:           hive.slots.slice(),
-            level:           hive.level.slice(),
-            mutation:        hive.mutation.slice(),
-            beequip:         hive.beequip.slice(),
-            partialBee:      (hive.partialBee      || []).slice(),
-            partialBeequip:  (hive.partialBeequip  || []).slice(),
-            partialLevel:    (hive.partialLevel    || []).slice(),
-            partialMutation: (hive.partialMutation || []).slice(),
+            name:                    hive.name,
+            slots:                   hive.slots.slice(),
+            level:                   hive.level.slice(),
+            mutation:                hive.mutation.slice(),
+            beequip:                 hive.beequip.slice(),
+            beequipTokens:           (hive.beequipTokens        || []).slice(),
+            partialBee:              (hive.partialBee           || []).slice(),
+            partialBeequip:          (hive.partialBeequip       || []).slice(),
+            partialBeequipTokens:    (hive.partialBeequipTokens || []).slice(),
+            partialLevel:            (hive.partialLevel         || []).slice(),
+            partialMutation:         (hive.partialMutation      || []).slice(),
+            drive:                   selected_drive,
         };
         saveCustomPresets(customs);
     }
@@ -882,10 +1130,13 @@ function exportText() {
         level: hive.level,
         mutation: hive.mutation,
         beequip: hive.beequip,
+        beequipTokens: hive.beequipTokens,
         partialBee: hive.partialBee,
         partialBeequip: hive.partialBeequip,
+        partialBeequipTokens: hive.partialBeequipTokens,
         partialLevel: hive.partialLevel,
-        partialMutation: hive.partialMutation
+        partialMutation: hive.partialMutation,
+        drive: selected_drive
     };
     const jsonStr = JSON.stringify(hiveData);
     navigator.clipboard.writeText(jsonStr).then(() => {
@@ -903,11 +1154,14 @@ async function importText() {
         hive.slots = hiveData.slots || [];
         hive.level = hiveData.level || [];
         hive.mutation = hiveData.mutation || [];
-        hive.beequip = hiveData.beequip || [];
-        hive.partialBee      = hiveData.partialBee      || new Array(hive.slots.length).fill(null);
-        hive.partialBeequip  = hiveData.partialBeequip  || new Array(hive.slots.length).fill(null);
-        hive.partialLevel    = hiveData.partialLevel    || new Array(hive.slots.length).fill(null);
-        hive.partialMutation = hiveData.partialMutation || new Array(hive.slots.length).fill(null);
+        hive.beequip              = hiveData.beequip              || [];
+        hive.beequipTokens        = hiveData.beequipTokens        || new Array(hive.slots.length).fill(null);
+        hive.partialBee           = hiveData.partialBee           || new Array(hive.slots.length).fill(null);
+        hive.partialBeequip       = hiveData.partialBeequip       || new Array(hive.slots.length).fill(null);
+        hive.partialBeequipTokens = hiveData.partialBeequipTokens || new Array(hive.slots.length).fill(null);
+        hive.partialLevel         = hiveData.partialLevel         || new Array(hive.slots.length).fill(null);
+        hive.partialMutation      = hiveData.partialMutation      || new Array(hive.slots.length).fill(null);
+        selected_drive = hiveData.drive || null;
         setMode('app', true);
     } catch (error) {
         showModal({ message: 'Invalid hive data.', type: 'alert' });
@@ -947,6 +1201,17 @@ async function changeSlot(type, category) {
         partialLevelVal = clamp(parseInt(n), 1, 25);
     }
     const isPartial = keyIsDown(CONTROL) && (category === 'bee' || category === 'beequip' || category === 'mutation');
+
+    // For beequip placement, show optional-token picker once before the loop
+    let pickedTokens = undefined; // undefined = not a beequip placement; null = cancelled
+    if (category === 'beequip' && typeof type === 'string' && BEEQUIP_ABILITY_OPTIONAL[type]) {
+        pickedTokens = await showBeequipPicker(type);
+        if (pickedTokens === null) { undoStack.pop(); return; } // user cancelled
+    }
+
+    if (!hive.beequipTokens) hive.beequipTokens = new Array(hive.slots.length).fill(null);
+    if (!hive.partialBeequipTokens) hive.partialBeequipTokens = new Array(hive.slots.length).fill(null);
+
     for (const i of uniqueSelected) {
         if (category === 'bee') {
             if (isPartial && type !== 'U') {
@@ -967,8 +1232,10 @@ async function changeSlot(type, category) {
         } else if (category === 'beequip') {
             if (isPartial) {
                 hive.partialBeequip[i] = type;
+                hive.partialBeequipTokens[i] = pickedTokens !== undefined ? pickedTokens : null;
             } else {
                 hive.beequip[i] = type;
+                hive.beequipTokens[i] = pickedTokens !== undefined ? pickedTokens : null;
             }
         } else if (category === 'level') {
             hive.level[i] = level+0;
@@ -980,23 +1247,28 @@ async function changeSlot(type, category) {
             hive.slots[i] = (cur === cur.toUpperCase()) ? cur.toLowerCase() : cur.toUpperCase();
         } else if (category === 'removequip') {
             hive.beequip[i] = null;
+            hive.beequipTokens[i] = null;
         } else if (category === 'removemut') {
             hive.mutation[i] = null;
         } else if (category === 'clearslot') {
-            hive.slots[i]    = 'U';
-            hive.beequip[i]  = null;
-            hive.mutation[i] = null;
-            hive.partialBee[i]      = null;
-            hive.partialBeequip[i]  = null;
-            hive.partialLevel[i]    = null;
-            hive.partialMutation[i] = null;
+            hive.slots[i]              = 'U';
+            hive.beequip[i]            = null;
+            hive.beequipTokens[i]      = null;
+            hive.mutation[i]           = null;
+            hive.partialBee[i]             = null;
+            hive.partialBeequip[i]         = null;
+            hive.partialBeequipTokens[i]   = null;
+            hive.partialLevel[i]           = null;
+            hive.partialMutation[i]        = null;
         } else if (category === 'clearpartial') {
-            hive.partialBee[i]      = null;
-            hive.partialBeequip[i]  = null;
-            hive.partialLevel[i]    = null;
-            hive.partialMutation[i] = null;
+            hive.partialBee[i]             = null;
+            hive.partialBeequip[i]         = null;
+            hive.partialBeequipTokens[i]   = null;
+            hive.partialLevel[i]           = null;
+            hive.partialMutation[i]        = null;
         } else if (category === 'removepartialquip') {
-            hive.partialBeequip[i] = null;
+            hive.partialBeequip[i]       = null;
+            hive.partialBeequipTokens[i] = null;
         } else if (category === 'removepartialmut') {
             hive.partialMutation[i] = null;
         }
@@ -1015,13 +1287,16 @@ async function clearHive() {
     if (!await showModal({ message: 'Clear all bees, beequips, and mutations from every slot?', type: 'confirm' })) return;
     saveUndoState();
     const n = hive.slots.length;
-    hive.slots       = new Array(n).fill('U');
-    hive.mutation    = new Array(n).fill(null);
-    hive.beequip     = new Array(n).fill(null);
-    hive.partialBee      = new Array(n).fill(null);
-    hive.partialBeequip  = new Array(n).fill(null);
-    hive.partialLevel    = new Array(n).fill(null);
-    hive.partialMutation = new Array(n).fill(null);
+    hive.slots                 = new Array(n).fill('U');
+    hive.mutation              = new Array(n).fill(null);
+    hive.beequip               = new Array(n).fill(null);
+    hive.beequipTokens         = new Array(n).fill(null);
+    hive.partialBee            = new Array(n).fill(null);
+    hive.partialBeequip        = new Array(n).fill(null);
+    hive.partialBeequipTokens  = new Array(n).fill(null);
+    hive.partialLevel          = new Array(n).fill(null);
+    hive.partialMutation       = new Array(n).fill(null);
+    selected_drive = null;
     selected = [];
     hexes = hexesNormal.slice();
     if (typeof updateParticles === 'function') updateParticles(hive);
@@ -1124,14 +1399,16 @@ function copySelection() {
     if (selected.length === 0) return;
     const idx = [...new Set(selected)].sort((a, b) => a - b);
     slotClipboard = {
-        slots:           idx.map(i => hive.slots[i]),
-        level:           idx.map(i => hive.level[i]),
-        mutation:        idx.map(i => hive.mutation[i]),
-        beequip:         idx.map(i => hive.beequip[i]),
-        partialBee:      idx.map(i => hive.partialBee[i]),
-        partialBeequip:  idx.map(i => hive.partialBeequip[i]),
-        partialLevel:    idx.map(i => hive.partialLevel[i]),
-        partialMutation: idx.map(i => hive.partialMutation[i])
+        slots:                idx.map(i => hive.slots[i]),
+        level:                idx.map(i => hive.level[i]),
+        mutation:             idx.map(i => hive.mutation[i]),
+        beequip:              idx.map(i => hive.beequip[i]),
+        beequipTokens:        idx.map(i => hive.beequipTokens[i]),
+        partialBee:           idx.map(i => hive.partialBee[i]),
+        partialBeequip:       idx.map(i => hive.partialBeequip[i]),
+        partialBeequipTokens: idx.map(i => hive.partialBeequipTokens[i]),
+        partialLevel:         idx.map(i => hive.partialLevel[i]),
+        partialMutation:      idx.map(i => hive.partialMutation[i])
     };
 }
 
@@ -1144,10 +1421,12 @@ function cutSelection() {
         hive.level[i] = 0;
         hive.mutation[i] = null;
         hive.beequip[i] = null;
-        hive.partialBee[i]      = null;
-        hive.partialBeequip[i]  = null;
-        hive.partialLevel[i]    = null;
-        hive.partialMutation[i] = null;
+        hive.beequipTokens[i] = null;
+        hive.partialBee[i]             = null;
+        hive.partialBeequip[i]         = null;
+        hive.partialBeequipTokens[i]   = null;
+        hive.partialLevel[i]           = null;
+        hive.partialMutation[i]        = null;
     }
     selected = [];
     hexes = hexesNormal.slice();
@@ -1161,14 +1440,16 @@ function pasteSelection() {
     const len = slotClipboard.slots.length;
     for (let j = 0; j < idx.length; j++) {
         const i = idx[j], s = j % len;
-        hive.slots[i]          = slotClipboard.slots[s];
-        hive.level[i]          = slotClipboard.level[s];
-        hive.mutation[i]       = slotClipboard.mutation[s];
-        hive.beequip[i]         = slotClipboard.beequip[s];
-        hive.partialBee[i]      = slotClipboard.partialBee      ? slotClipboard.partialBee[s]      : null;
-        hive.partialBeequip[i]  = slotClipboard.partialBeequip  ? slotClipboard.partialBeequip[s]  : null;
-        hive.partialLevel[i]    = slotClipboard.partialLevel    ? slotClipboard.partialLevel[s]    : null;
-        hive.partialMutation[i] = slotClipboard.partialMutation ? slotClipboard.partialMutation[s] : null;
+        hive.slots[i]                = slotClipboard.slots[s];
+        hive.level[i]                = slotClipboard.level[s];
+        hive.mutation[i]             = slotClipboard.mutation[s];
+        hive.beequip[i]              = slotClipboard.beequip[s];
+        hive.beequipTokens[i]        = slotClipboard.beequipTokens        ? slotClipboard.beequipTokens[s]        : null;
+        hive.partialBee[i]           = slotClipboard.partialBee           ? slotClipboard.partialBee[s]           : null;
+        hive.partialBeequip[i]       = slotClipboard.partialBeequip       ? slotClipboard.partialBeequip[s]       : null;
+        hive.partialBeequipTokens[i] = slotClipboard.partialBeequipTokens ? slotClipboard.partialBeequipTokens[s] : null;
+        hive.partialLevel[i]         = slotClipboard.partialLevel         ? slotClipboard.partialLevel[s]         : null;
+        hive.partialMutation[i]      = slotClipboard.partialMutation      ? slotClipboard.partialMutation[s]      : null;
     }
     selected = [];
     hexes = hexesNormal.slice();
@@ -1207,14 +1488,17 @@ function initPresetPanel() {
                 }
                 customs.push({
                     name,
-                    slots:           hive.slots.slice(),
-                    level:           hive.level.slice(),
-                    mutation:        hive.mutation.slice(),
-                    beequip:         hive.beequip.slice(),
-                    partialBee:      (hive.partialBee      || []).slice(),
-                    partialBeequip:  (hive.partialBeequip  || []).slice(),
-                    partialLevel:    (hive.partialLevel    || []).slice(),
-                    partialMutation: (hive.partialMutation || []).slice(),
+                    slots:                hive.slots.slice(),
+                    level:                hive.level.slice(),
+                    mutation:             hive.mutation.slice(),
+                    beequip:              hive.beequip.slice(),
+                    beequipTokens:        (hive.beequipTokens        || []).slice(),
+                    partialBee:           (hive.partialBee           || []).slice(),
+                    partialBeequip:       (hive.partialBeequip       || []).slice(),
+                    partialBeequipTokens: (hive.partialBeequipTokens || []).slice(),
+                    partialLevel:         (hive.partialLevel         || []).slice(),
+                    partialMutation:      (hive.partialMutation      || []).slice(),
+                    drive:                selected_drive,
                 });
                 saveCustomPresets(customs);
                 renderPresets('custom');
@@ -1274,16 +1558,19 @@ function initPresetPanel() {
 function loadPreset(preset) {
     saveUndoState();
     hive = {
-        name:            preset.name,
-        slots:           preset.slots.slice(),
-        level:           preset.level.slice(),
-        mutation:        preset.mutation.slice(),
-        beequip:         preset.beequip.slice(),
-        partialBee:      preset.partialBee      ? preset.partialBee.slice()      : new Array(preset.slots.length).fill(null),
-        partialBeequip:  preset.partialBeequip  ? preset.partialBeequip.slice()  : new Array(preset.slots.length).fill(null),
-        partialLevel:    preset.partialLevel    ? preset.partialLevel.slice()    : new Array(preset.slots.length).fill(null),
-        partialMutation: preset.partialMutation ? preset.partialMutation.slice() : new Array(preset.slots.length).fill(null),
+        name:                    preset.name,
+        slots:                   preset.slots.slice(),
+        level:                   preset.level.slice(),
+        mutation:                preset.mutation.slice(),
+        beequip:                 preset.beequip.slice(),
+        beequipTokens:           preset.beequipTokens        ? preset.beequipTokens.slice()        : new Array(preset.slots.length).fill(null),
+        partialBee:              preset.partialBee           ? preset.partialBee.slice()           : new Array(preset.slots.length).fill(null),
+        partialBeequip:          preset.partialBeequip       ? preset.partialBeequip.slice()       : new Array(preset.slots.length).fill(null),
+        partialBeequipTokens:    preset.partialBeequipTokens ? preset.partialBeequipTokens.slice() : new Array(preset.slots.length).fill(null),
+        partialLevel:            preset.partialLevel         ? preset.partialLevel.slice()         : new Array(preset.slots.length).fill(null),
+        partialMutation:         preset.partialMutation      ? preset.partialMutation.slice()      : new Array(preset.slots.length).fill(null),
     };
+    selected_drive = preset.drive || null;
     selected = [];
     hexes = [];
     hexesNormal = [];
@@ -1291,7 +1578,7 @@ function loadPreset(preset) {
 }
 
 async function shareURL() {
-    const bytes = new TextEncoder().encode(JSON.stringify(hive));
+    const bytes = new TextEncoder().encode(JSON.stringify({ ...hive, drive: selected_drive }));
     const stream = new CompressionStream('deflate-raw');
     const writer = stream.writable.getWriter();
     writer.write(bytes);
@@ -1303,6 +1590,139 @@ async function shareURL() {
     const url = `${location.origin}${location.pathname}?hive=${b64url}`;
     await navigator.clipboard.writeText(url);
     flashStatusText('copied!');
+}
+
+function _buildPickerCard(bqpCode, guaranteed, combo) {
+    const card = document.createElement('button');
+    card.className = 'bqp-picker-card';
+
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'bqp-card-imgwrap';
+
+    const bqpImg = document.createElement('img');
+    bqpImg.src = `assets/bqps/bqp_${bqpCode}.png`;
+    bqpImg.className = 'bqp-card-bqp';
+    imgWrap.appendChild(bqpImg);
+
+    const allShown = [...guaranteed, ...combo];
+    for (const tok of allShown) {
+        if (!TOKEN_ASSETS[tok]) continue;
+        const tImg = document.createElement('img');
+        tImg.src = TOKEN_ASSETS[tok];
+        tImg.className = 'bqp-card-token' + (combo.includes(tok) ? ' bqp-card-token-sel' : ' bqp-card-token-guar');
+        imgWrap.appendChild(tImg);
+    }
+
+    const label = document.createElement('div');
+    label.className = 'bqp-card-label';
+    label.textContent = combo.length === 0
+        ? (guaranteed.length > 0 ? guaranteed.join(' + ') : 'None')
+        : [...guaranteed, ...combo].join(' + ');
+
+    card.appendChild(imgWrap);
+    card.appendChild(label);
+    return card;
+}
+
+function showBeequipPicker(bqpCode) {
+    return new Promise(resolve => {
+        const opt = BEEQUIP_ABILITY_OPTIONAL[bqpCode];
+        if (!opt) { resolve([]); return; }
+
+        const bqpInfo   = BQP_INFO[bqpCode] || {};
+        const overlay   = document.getElementById('bqp-picker-overlay');
+        const title     = document.getElementById('bqp-picker-title');
+        const optArea   = document.getElementById('bqp-picker-options');
+        const cancelBtn = document.getElementById('bqp-picker-cancel');
+
+        title.textContent = `${bqpInfo.name || bqpCode} — choose ability tokens`;
+        optArea.innerHTML = '';
+
+        const guaranteed = BEEQUIP_ABILITY_GUARANTEED[bqpCode] || [];
+
+        function cleanup() {
+            overlay.classList.remove('active');
+            cancelBtn.removeEventListener('click', onCancel);
+            document.removeEventListener('keydown', onKeydown);
+        }
+        function onCancel() { cleanup(); resolve(null); }
+        function onKeydown(e) { if (e.key === 'Escape') { cleanup(); resolve(null); } }
+        cancelBtn.addEventListener('click', onCancel);
+        document.addEventListener('keydown', onKeydown);
+
+        // ── Multi-group picker (e.g. Bang Snap: Bomb tier + Bomb+ tier) ────────
+        if (opt.groups) {
+            const selections = new Array(opt.groups.length).fill(null);
+
+            for (let gi = 0; gi < opt.groups.length; gi++) {
+                const group = opt.groups[gi];
+
+                const rowWrap = document.createElement('div');
+                rowWrap.className = 'bqp-group-wrap';
+
+                if (group.label) {
+                    const rowLabel = document.createElement('div');
+                    rowLabel.className = 'bqp-group-label';
+                    rowLabel.textContent = group.label;
+                    rowWrap.appendChild(rowLabel);
+                }
+
+                const row = document.createElement('div');
+                row.className = 'bqp-group-row';
+
+                const cards = [];
+                const combos = [[], ...group.tokens.map(t => [t])];
+
+                for (let ci = 0; ci < combos.length; ci++) {
+                    const combo = combos[ci];
+                    const card = _buildPickerCard(bqpCode, guaranteed, combo);
+                    if (ci === 0) card.classList.add('bqp-card-active'); // "none" selected by default
+                    card.addEventListener('click', (function(myGi, myCombo, myCards, myci) {
+                        return function() {
+                            selections[myGi] = myCombo.length > 0 ? myCombo[0] : null;
+                            myCards.forEach((c, k) => c.classList.toggle('bqp-card-active', k === myci));
+                        };
+                    })(gi, combo, cards, ci));
+                    cards.push(card);
+                    row.appendChild(card);
+                }
+
+                rowWrap.appendChild(row);
+                optArea.appendChild(rowWrap);
+            }
+
+            const confirmBtn = document.createElement('button');
+            confirmBtn.id = 'bqp-picker-confirm';
+            confirmBtn.textContent = 'Confirm';
+            confirmBtn.addEventListener('click', () => {
+                cleanup();
+                resolve(selections.filter(s => s !== null));
+            });
+            optArea.appendChild(confirmBtn);
+
+        // ── Single-group picker (all other beequips) ──────────────────────────
+        } else {
+            const { tokens, exclusive } = opt;
+            let combos;
+            if (exclusive) {
+                combos = [[], ...tokens.map(t => [t])];
+            } else {
+                const n = tokens.length;
+                combos = [];
+                for (let mask = 0; mask < (1 << n); mask++) {
+                    combos.push(tokens.filter((_, idx) => mask & (1 << idx)));
+                }
+            }
+
+            for (const combo of combos) {
+                const card = _buildPickerCard(bqpCode, guaranteed, combo);
+                card.addEventListener('click', () => { cleanup(); resolve(combo); });
+                optArea.appendChild(card);
+            }
+        }
+
+        overlay.classList.add('active');
+    });
 }
 
 function showKeybinds() {
@@ -1340,7 +1760,9 @@ function keyPressed() {
                 partialBee: new Array(50).fill(null),
                 partialBeequip: new Array(50).fill(null),
                 partialLevel: new Array(50).fill(null),
-                partialMutation: new Array(50).fill(null)
+                partialMutation: new Array(50).fill(null),
+                beequipTokens: new Array(50).fill(null),
+                partialBeequipTokens: new Array(50).fill(null)
             };
             hexes = [];
             hexesNormal = [];
@@ -1350,6 +1772,7 @@ function keyPressed() {
             resizeCanvas(472, 563);
             select('#menu').attribute('data-status', 'inactive');
             select('#app').attribute('data-status', 'active');
+            select('#multSeltCon').attribute('data-status', 'active');
             return false;
         }
         if (key === 'i' || key === 'I') { importText(); return false; }
@@ -1367,22 +1790,25 @@ function keyPressed() {
             for (const i of uniqueSel) {
                 hive.slots[i] = 'U';
                 hive.beequip[i] = null;
+                hive.beequipTokens[i] = null;
             }
         } else {
             const hasPartial = uniqueSel.some(i => hive.partialBee[i] != null || hive.partialBeequip[i] != null || hive.partialLevel[i] != null || hive.partialMutation[i] != null);
             if (hasPartial) {
                 // First Backspace: clear all partial data
                 for (const i of uniqueSel) {
-                    hive.partialBee[i]      = null;
-                    hive.partialBeequip[i]  = null;
-                    hive.partialLevel[i]    = null;
-                    hive.partialMutation[i] = null;
+                    hive.partialBee[i]             = null;
+                    hive.partialBeequip[i]         = null;
+                    hive.partialBeequipTokens[i]   = null;
+                    hive.partialLevel[i]           = null;
+                    hive.partialMutation[i]        = null;
                 }
             } else {
                 // No partial: act as usual
                 for (const i of uniqueSel) {
                     hive.slots[i] = 'U';
                     hive.beequip[i] = null;
+                    hive.beequipTokens[i] = null;
                     hive.mutation[i] = null;
                 }
             }
@@ -1407,6 +1833,7 @@ function keyPressed() {
         }
         return false;
     }
+    if (key === 'f' || key === 'F') { if (selected.length > 0) { changeSlot(0, 'flip'); } return false; }
     if (!keyIsDown(CONTROL)) return;
     const k = key.toLowerCase();
     if (k === 'z' && keyIsDown(SHIFT)) { redo(); return false; }
